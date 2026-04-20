@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[TuEmpresa] Security | Ciberseguridad Profesional</title>
+<meta name="description" content="Auditoría de seguridad y pentesting de infraestructura y aplicaciones web. Clasificación, cifrado y prevención de fugas de información con Microsoft Purview.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f2444;
+  --navy2:#1a3a6b;
+  --gold:#c9a84c;
+  --gold2:#e8c97a;
+  --bg:#fafaf8;
+  --bg2:#f4f3ef;
+  --bg3:#eceae3;
+  --text:#1a1a1a;
+  --muted:#5a5a5a;
+  --dim:#9a9a9a;
+  --line:#ddd9d0;
+  --serif:'Cormorant Garamond',serif;
+  --sans:'Inter',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.7;overflow-x:hidden}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:1.2rem 7%;background:rgba(250,250,248,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.logo{font-family:var(--serif);font-size:1.4rem;font-weight:600;color:var(--navy);text-decoration:none;letter-spacing:-0.01em}
+.logo span{color:var(--gold)}
+nav ul{display:flex;gap:2.5rem;list-style:none;align-items:center}
+nav a{font-family:var(--sans);font-size:0.78rem;color:var(--muted);text-decoration:none;letter-spacing:0.04em;text-transform:uppercase;font-weight:500;transition:color 0.2s}
+nav a:hover{color:var(--navy)}
+.nav-cta{background:var(--navy)!important;color:#fff!important;padding:0.55rem 1.4rem;border-radius:2px;transition:background 0.2s!important}
+.nav-cta:hover{background:var(--navy2)!important}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hamburger span{display:block;width:22px;height:1.5px;background:var(--navy)}
+
+#hero{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;padding:8rem 7% 5rem;background:var(--navy);overflow:hidden}
+.hero-bg-lines{position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 12.5%);pointer-events:none}
+.hero-content{max-width:680px;position:relative;z-index:1}
+.hero-tag{display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);font-size:0.7rem;color:var(--gold2);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2rem;font-weight:500}
+.hero-tag::before{content:'';width:32px;height:1px;background:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(3rem,5.5vw,5.5rem);font-weight:600;line-height:1.05;letter-spacing:-0.02em;color:#fff;margin-bottom:2rem}
+h1 em{color:var(--gold2);font-style:italic}
+.hero-lead{font-size:1.05rem;color:rgba(255,255,255,0.65);line-height:1.9;max-width:520px;margin-bottom:3rem;font-weight:300}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:var(--navy);font-family:var(--sans);font-size:0.78rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:1rem 2.2rem;text-decoration:none;transition:background 0.2s}
+.btn-primary:hover{background:var(--gold2)}
+.btn-outline{display:inline-flex;align-items:center;gap:10px;background:transparent;color:rgba(255,255,255,0.8);font-family:var(--sans);font-size:0.78rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:1rem 2.2rem;border:1px solid rgba(255,255,255,0.2);text-decoration:none;transition:border-color 0.2s,color 0.2s}
+.btn-outline:hover{border-color:rgba(255,255,255,0.5);color:#fff}
+.hero-stats{display:flex;gap:3rem;padding-top:3rem;border-top:1px solid rgba(255,255,255,0.1);flex-wrap:wrap}
+.hs-n{font-family:var(--serif);font-size:2.8rem;font-weight:600;color:#fff;line-height:1}
+.hs-n span{color:var(--gold2)}
+.hs-l{font-size:0.68rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-top:6px;font-weight:500}
+
+.compliance-bar{position:relative;z-index:1;background:var(--bg2);border-bottom:1px solid var(--line);padding:1rem 7%;display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.cb-label{font-size:0.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.12em;font-weight:600;white-space:nowrap}
+.cb-tags{display:flex;gap:8px;flex-wrap:wrap}
+.cb-tag{font-size:0.68rem;color:var(--navy);font-weight:500;padding:3px 10px;border:1px solid var(--line);background:#fff}
+
+section{position:relative;z-index:1;padding:7rem 7%}
+
+.sec-eyebrow{font-size:0.68rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.sec-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold)}
+h2{font-family:var(--serif);font-size:clamp(2.2rem,3.5vw,3.4rem);font-weight:600;color:var(--navy);letter-spacing:-0.02em;line-height:1.1;margin-bottom:1rem}
+.sec-sub{font-size:1rem;color:var(--muted);max-width:540px;line-height:1.85;margin-bottom:4rem;font-weight:300}
+
+#servicios{background:var(--bg)}
+
+.service-card{border:1px solid var(--line);margin-bottom:2rem;background:#fff}
+.sc-header{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:start;padding:3rem;border-bottom:1px solid var(--line);background:var(--bg2)}
+.sc-num{font-size:0.65rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:600;margin-bottom:0.8rem}
+.sc-header h3{font-family:var(--serif);font-size:clamp(1.5rem,2.5vw,2rem);font-weight:600;color:var(--navy);line-height:1.2;margin-bottom:1rem}
+.sc-header h3 small{display:block;font-family:var(--sans);font-size:0.75rem;color:var(--muted);font-weight:400;margin-top:6px;font-style:normal}
+.sc-header p{font-size:0.92rem;color:var(--muted);line-height:1.85;max-width:620px;font-weight:300}
+.sc-badge{display:inline-flex;align-items:center;gap:6px;font-size:0.7rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--navy);background:var(--bg3);border:1px solid var(--line);padding:0.5rem 1rem;align-self:flex-start;white-space:nowrap}
+.sc-cols{display:grid;grid-template-columns:1fr 1fr 1fr}
+.sc-col{padding:2.5rem;border-right:1px solid var(--line)}
+.sc-col:last-child{border-right:none}
+.sc-col-title{font-size:0.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.12em;font-weight:600;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.sc-col p{font-size:0.88rem;color:var(--muted);line-height:1.85;font-weight:300}
+
+#proceso{background:var(--navy);padding:7rem 7%}
+#proceso .sec-eyebrow{color:var(--gold2)}
+#proceso .sec-eyebrow::before{background:var(--gold2)}
+#proceso h2{color:#fff}
+#proceso .sec-sub{color:rgba(255,255,255,0.5)}
+.process-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(255,255,255,0.08)}
+.process-step{background:var(--navy);padding:2rem 1.8rem;position:relative;border-top:2px solid transparent;transition:border-color 0.3s}
+.process-step:hover{border-top-color:var(--gold)}
+.ps-num{font-family:var(--serif);font-size:2.5rem;font-weight:600;color:rgba(255,255,255,0.08);line-height:1;margin-bottom:1.2rem}
+.process-step h4{font-size:0.88rem;font-weight:600;color:#fff;margin-bottom:0.5rem;letter-spacing:0.02em}
+.process-step p{font-size:0.8rem;color:rgba(255,255,255,0.45);line-height:1.75;font-weight:300}
+
+#porque{background:var(--bg2)}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+.why-card{background:#fff;border:1px solid var(--line);padding:2.5rem;position:relative}
+.why-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:transparent;transition:background 0.3s}
+.why-card:hover::before{background:var(--gold)}
+.wc-num{font-family:var(--serif);font-size:3rem;font-weight:600;color:var(--bg3);line-height:1;margin-bottom:1rem}
+.why-card h4{font-size:0.92rem;font-weight:600;color:var(--navy);margin-bottom:0.6rem;letter-spacing:0.02em}
+.why-card p{font-size:0.85rem;color:var(--muted);line-height:1.8;font-weight:300}
+
+#contacto{background:#fff;padding:7rem 7%}
+.contact-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:6rem;align-items:start}
+.contact-info h2{margin-bottom:1rem}
+.contact-info .sec-sub{margin-bottom:2.5rem}
+.c-item{display:flex;gap:14px;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid var(--line)}
+.c-item:first-of-type{border-top:1px solid var(--line)}
+.c-ico{width:36px;height:36px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;border:1px solid var(--line)}
+.c-lbl{font-size:0.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2px}
+.c-val{font-size:0.9rem;color:var(--text);font-weight:400}
+
+form{background:var(--bg2);border:1px solid var(--line);padding:2.5rem}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fg{margin-bottom:1.2rem}
+label{display:block;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:0.5rem}
+input,textarea,select{width:100%;background:#fff;border:1px solid var(--line);color:var(--text);font-family:var(--sans);font-size:0.9rem;padding:0.8rem 1rem;outline:none;transition:border-color 0.2s;-webkit-appearance:none;border-radius:0}
+input:focus,textarea:focus,select:focus{border-color:var(--navy)}
+input::placeholder,textarea::placeholder{color:var(--dim)}
+textarea{min-height:120px;resize:vertical;line-height:1.6}
+select option{background:#fff}
+.btn-send{width:100%;margin-top:0.5rem;background:var(--navy);color:#fff;font-family:var(--sans);font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:1rem;border:none;cursor:pointer;transition:background 0.2s}
+.btn-send:hover{background:var(--navy2)}
+.f-note{font-size:0.65rem;color:var(--dim);text-align:center;margin-top:1rem;line-height:1.7}
+.form-ok{display:none;text-align:center;padding:3rem 1rem}
+.form-ok h3{font-family:var(--serif);font-size:1.5rem;color:var(--navy);margin-bottom:0.5rem}
+.form-ok p{font-size:0.9rem;color:var(--muted)}
+
+footer{background:var(--navy);padding:2.5rem 7%;border-top:3px solid var(--gold)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem}
+.footer-brand{font-family:var(--serif);font-size:1.1rem;color:rgba(255,255,255,0.5);line-height:1.8}
+.footer-brand strong{color:#fff;font-weight:600}
+.footer-nav{display:flex;gap:2rem;list-style:none}
+.footer-nav a{font-size:0.72rem;color:rgba(255,255,255,0.4);text-decoration:none;text-transform:uppercase;letter-spacing:0.08em;transition:color 0.2s;font-weight:500}
+.footer-nav a:hover{color:var(--gold2)}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 0.6s ease,transform 0.6s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:1000px){
+  #hero{grid-template-columns:1fr}
+  .sc-cols{grid-template-columns:1fr}
+  .sc-col{border-right:none;border-bottom:1px solid var(--line)}
+  .sc-col:last-child{border-bottom:none}
+  .process-row{grid-template-columns:repeat(3,1fr)}
+  .why-grid{grid-template-columns:1fr 1fr}
+  .contact-grid{grid-template-columns:1fr;gap:3rem}
+  .f-row{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  nav ul{display:none}.hamburger{display:flex}
+  .why-grid{grid-template-columns:1fr}
+  .process-row{grid-template-columns:1fr}
+  .sc-header{grid-template-columns:1fr}
+  h1{font-size:2.8rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#hero" class="logo">[Tu<span>Empresa</span>] Security</a>
+  <ul>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proceso">Metodología</a></li>
+    <li><a href="#porque">Nosotros</a></li>
+    <li><a href="#contacto" class="nav-cta">Contacto</a></li>
+  </ul>
+  <button class="hamburger" id="hb" aria-label="Menú"><span></span><span></span><span></span></button>
+</nav>
+
+<section id="hero">
+  <div class="hero-bg-lines"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Ciberseguridad para empresas</div>
+    <h1>Seguridad ofensiva<br>y <em>gobierno del dato</em><br>para su empresa.</h1>
+    <p class="hero-lead">Identificamos vulnerabilidades reales en su infraestructura antes que los atacantes. Clasificamos, ciframos y protegemos su información sensible con Microsoft Purview. Dos proyectos especializados. Un interlocutor. Sin intermediarios.</p>
+    <div class="hero-actions">
+      <a href="#contacto" class="btn-primary">Solicitar propuesta</a>
+      <a href="#servicios" class="btn-outline">Ver proyectos</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hs-n">360<span>º</span></div><div class="hs-l">Infraestructura & Dato</div></div>
+      <div><div class="hs-n">24<span>h</span></div><div class="hs-l">Respuesta inicial</div></div>
+      <div><div class="hs-n">NIS2<span>+</span></div><div class="hs-l">ISO 27001 · RGPD · ENS</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="compliance-bar">
+  <span class="cb-label">Metodología & Compliance</span>
+  <div class="cb-tags">
+    <span class="cb-tag">ISO/IEC 27001</span><span class="cb-tag">RGPD</span><span class="cb-tag">NIS2</span><span class="cb-tag">ENS</span><span class="cb-tag">PCI-DSS</span><span class="cb-tag">DORA</span><span class="cb-tag">OWASP Top 10</span><span class="cb-tag">PTES</span><span class="cb-tag">Microsoft Purview</span><span class="cb-tag">MPIP</span>
+  </div>
+</div>
+
+<section id="servicios">
+  <div class="sec-eyebrow reveal">Proyectos</div>
+  <h2 class="reveal">Un resultado:<br>su empresa protegida.</h2>
+  <p class="sec-sub reveal">Evaluación exhaustiva de su postura de seguridad y control total sobre su información sensible. Proyectos orientados a resultados concretos.</p>
+
+  <div class="service-card reveal">
+    <div class="sc-header">
+      <div>
+        <div class="sc-num">Proyecto 01</div>
+        <h3>Auditoría de Seguridad y Pentesting<small>Infraestructura y Aplicaciones Web</small></h3>
+        <p>Proyecto orientado a la evaluación exhaustiva y proactiva de la postura de ciberseguridad, enfocado en la identificación, explotación controlada y remediación de vulnerabilidades. Abarca tanto el perímetro externo como la red interna corporativa, simulando amenazas desde el exterior y posibles atacantes internos. Combina capacidades avanzadas apoyadas en metodologías estándar (OWASP y PTES) y define un plan de acción priorizado para maximizar la resiliencia.</p>
+      </div>
+      <div class="sc-badge">Pentesting & Auditoría</div>
+    </div>
+    <div class="sc-cols">
+      <div class="sc-col"><div class="sc-col-title">Objetivos</div><p>Evaluar integralmente su ciberseguridad para anticipar ataques, prevenir fugas de datos y bloquear accesos no autorizados. Garantiza el cumplimiento normativo (ISO 27001, RGPD, ENS) y valida la eficacia real de sus defensas y sistemas de monitorización (SOC/SIEM).</p></div>
+      <div class="sc-col"><div class="sc-col-title">Capacidades / Alcance</div><p>Auditorías personalizadas (Caja Negra, Gris, Blanca) con pruebas de penetración web (OWASP), revisión de red interna y Directorio Activo. Simulaciones de ataques avanzados, finalizando con informes técnico-ejecutivos, pruebas de concepto (PoC) y planes de remediación priorizados.</p></div>
+      <div class="sc-col"><div class="sc-col-title">Beneficios</div><p>Reducción drástica del riesgo tecnológico mediante la eliminación de puntos ciegos. Asegura el cumplimiento regulatorio, protege la reputación de la marca, valida su inversión en seguridad y eleva la madurez hacia un modelo proactivo de defensa en profundidad.</p></div>
+    </div>
+  </div>
+
+  <div class="service-card reveal">
+    <div class="sc-header">
+      <div>
+        <div class="sc-num">Proyecto 02</div>
+        <h3>Clasificación, Cifrado y Prevención de Fugas<small>Correo y Cloud — Microsoft Purview</small></h3>
+        <p>Proyecto orientado a la implantación de un modelo integral de clasificación, cifrado y prevención de fugas de información, enfocado en la protección del dato a lo largo de todo su ciclo de vida, tanto en entornos de correo electrónico como plataformas cloud. Combina Microsoft Purview Information Protection (MPIP) con Microsoft Purview Data Loss Prevention (DLP) para establecer un marco de gobierno del dato completo.</p>
+      </div>
+      <div class="sc-badge">DLP · Microsoft Purview</div>
+    </div>
+    <div class="sc-cols">
+      <div class="sc-col"><div class="sc-col-title">Objetivos</div><p>Proteger la información confidencial durante todo su ciclo de vida mediante un modelo homogéneo de clasificación y cifrado. Prevenir exfiltraciones en correo y nube, garantizar el cumplimiento normativo (ISO 27001, RGPD) y dotar a la organización de control y trazabilidad absolutos sobre sus datos.</p></div>
+      <div class="sc-col"><div class="sc-col-title">Capacidades / Alcance</div><p>Diseño e implantación del modelo de clasificación y gobierno del dato. Despliegue de Microsoft Purview Information Protection (cifrado y etiquetado) y Data Loss Prevention para monitorizar y bloquear fugas. Integrado con Exchange, Teams, SharePoint y OneDrive.</p></div>
+      <div class="sc-col"><div class="sc-col-title">Beneficios</div><p>Reduce radicalmente el riesgo de exposición de información sensible y posibles sanciones legales. Aporta visibilidad total sobre los datos, eleva la concienciación de los usuarios y establece una base sólida de madurez para escalar hacia eDiscovery y gestión de riesgos internos.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="proceso">
+  <div class="sec-eyebrow reveal">Metodología</div>
+  <h2 class="reveal" style="color:#fff">Cómo trabajamos</h2>
+  <p class="sec-sub reveal">Un proceso estructurado y transparente. Sabe en todo momento en qué fase está su proyecto y qué esperar de cada entrega.</p>
+  <div class="process-row reveal">
+    <div class="process-step"><div class="ps-num">01</div><h4>Reunión de alcance</h4><p>Definimos sistemas en scope, modelo de auditoría y objetivos específicos. Sin coste. Sin compromiso.</p></div>
+    <div class="process-step"><div class="ps-num">02</div><h4>Propuesta técnica</h4><p>Documento de alcance, metodología, entregables y precio cerrado. Sin letra pequeña ni sorpresas.</p></div>
+    <div class="process-step"><div class="ps-num">03</div><h4>Trabajo técnico</h4><p>Realizamos el proyecto con actualizaciones periódicas. Acceso directo al técnico responsable.</p></div>
+    <div class="process-step"><div class="ps-num">04</div><h4>Entrega de resultados</h4><p>Informe ejecutivo + técnico con hallazgos priorizados por severidad, evidencias (PoC) y plan de remediación.</p></div>
+    <div class="process-step"><div class="ps-num">05</div><h4>Soporte post-proyecto</h4><p>Disponibles para aclarar hallazgos y validar que las correcciones implementadas son efectivas.</p></div>
+  </div>
+</section>
+
+<section id="porque">
+  <div class="sec-eyebrow reveal">Por qué nosotros</div>
+  <h2 class="reveal">Sin departamentos.<br>Solo resultados.</h2>
+  <p class="sec-sub reveal">Como empresa especializada sin la estructura de una gran consultora, ofrecemos lo que las grandes no pueden: atención directa, agilidad real y precio justo.</p>
+  <div class="why-grid reveal">
+    <div class="why-card"><div class="wc-num">01</div><h4>Especialización total</h4><p>Solo hacemos pentesting y protección del dato. No somos un departamento IT generalista que también hace ciberseguridad. Conocemos los detalles que marcan la diferencia.</p></div>
+    <div class="why-card"><div class="wc-num">02</div><h4>Interlocutor único</h4><p>Habla con quien ejecuta el trabajo. No hay cuentas de cliente ni cadenas de mando que distorsionen la información técnica o alarguen los plazos.</p></div>
+    <div class="why-card"><div class="wc-num">03</div><h4>Informes accionables</h4><p>Hallazgos priorizados por severidad, con PoC reproducibles y pasos de remediación específicos. No PDFs de 80 páginas sin conclusiones claras.</p></div>
+    <div class="why-card"><div class="wc-num">04</div><h4>Precio transparente</h4><p>Precio cerrado desde el inicio. Sin costes ocultos. Si hay cambios de alcance, se acuerdan y presupuestan antes de ejecutarse.</p></div>
+    <div class="why-card"><div class="wc-num">05</div><h4>Marco legal sólido</h4><p>Todos los proyectos se ejecutan bajo contrato de autorización expresa. Confidencialidad, RGPD y responsabilidad civil cubiertos desde el primer día.</p></div>
+    <div class="why-card"><div class="wc-num">06</div><h4>Visión de continuidad</h4><p>La ciberseguridad no es un proyecto de una sola vez. Ofrecemos relaciones de largo plazo con revisiones periódicas que evolucionan con su empresa.</p></div>
+  </div>
+</section>
+
+<section id="contacto">
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="sec-eyebrow reveal">Contacto</div>
+      <h2 class="reveal">Hablemos de<br>su proyecto</h2>
+      <p class="sec-sub reveal">Cuéntenos qué necesita. En menos de 24 horas recibirá respuesta con orientación técnica inicial sin ningún compromiso.</p>
+      <div class="c-item reveal"><div class="c-ico">📧</div><div><div class="c-lbl">Email</div><div class="c-val">contacto@tuempresa.com</div></div></div>
+      <div class="c-item reveal"><div class="c-ico">⏱</div><div><div class="c-lbl">Respuesta</div><div class="c-val">Menos de 24 horas laborables</div></div></div>
+      <div class="c-item reveal"><div class="c-ico">🌍</div><div><div class="c-lbl">Cobertura</div><div class="c-val">Ámbito Internacional · 100% remoto</div></div></div>
+    </div>
+    <form id="cform" action="https://formspree.io/f/TU_ID_FORMSPREE" method="POST" class="reveal">
+      <div class="f-row">
+        <div class="fg"><label for="nombre">Nombre *</label><input type="text" id="nombre" name="nombre" placeholder="Su nombre" required></div>
+        <div class="fg"><label for="empresa">Empresa</label><input type="text" id="empresa" name="empresa" placeholder="Su empresa"></div>
+      </div>
+      <div class="fg"><label for="email">Email *</label><input type="email" id="email" name="email" placeholder="su@empresa.com" required></div>
+      <div class="fg">
+        <label for="proyecto">Proyecto de interés *</label>
+        <select id="proyecto" name="proyecto" required>
+          <option value="" disabled selected>Seleccione un proyecto</option>
+          <option value="pentesting">Auditoría de Seguridad y Pentesting</option>
+          <option value="dlp">Clasificación, Cifrado y DLP (Microsoft Purview)</option>
+          <option value="ambos">Ambos proyectos</option>
+          <option value="consulta">Consulta general</option>
+        </select>
+      </div>
+      <div class="fg"><label for="msg">Describa su situación *</label><textarea id="msg" name="msg" placeholder="¿Qué necesita proteger? ¿Cuántos usuarios o sistemas están en scope? ¿Tiene algún plazo o requerimiento normativo específico?" required></textarea></div>
+      <input type="hidden" name="_subject" value="Nueva consulta — TuEmpresa Security">
+      <input type="text" name="_gotcha" style="display:none">
+      <button type="submit" class="btn-send">Enviar consulta</button>
+      <p class="f-note">Datos tratados conforme al RGPD únicamente para responder su consulta. Sin spam. Sin cesiones a terceros.</p>
+    </form>
+    <div class="form-ok" id="formOk"><h3>Mensaje recibido</h3><p>Le responderemos en menos de 24 horas laborables con orientación técnica inicial.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><strong>[TuEmpresa] Security</strong><br>© 2025 Todos los derechos reservados. Pentesting · DLP Microsoft Purview</div>
+    <ul class="footer-nav">
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#proceso">Metodología</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+      <li><a href="#">Privacidad</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+const io=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'),i*70);io.unobserve(e.target);}});},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+document.getElementById('hb').addEventListener('click',function(){const ul=document.querySelector('nav ul');const open=ul.style.display==='flex';Object.assign(ul.style,{display:open?'none':'flex',flexDirection:'column',position:'fixed',top:'60px',left:'0',right:'0',background:'rgba(250,250,248,0.98)',padding:'1.5rem 7%',gap:'1.2rem',borderBottom:'1px solid #ddd9d0',zIndex:'199'});});
+const form=document.getElementById('cform');const ok=document.getElementById('formOk');
+form.addEventListener('submit',async(e)=>{e.preventDefault();const btn=form.querySelector('.btn-send');btn.textContent='Enviando…';btn.disabled=true;try{const r=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});if(r.ok){form.style.display='none';ok.style.display='block';}else{btn.textContent='Error al enviar. Inténtelo de nuevo.';btn.disabled=false;}}catch{btn.textContent='Error de conexión. Inténtelo de nuevo.';btn.disabled=false;}});
+</script>
+</body>
+</html>

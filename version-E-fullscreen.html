@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[TuEmpresa] Security</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#08080a;
+  --white:#f8f7f4;
+  --accent:#ff5c3a;
+  --accent2:#ff8468;
+  --blue:#1a1aff;
+  --mid:#888;
+  --grotesk:'Cabinet Grotesk',sans-serif;
+  --serif:'Instrument Serif',serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;scroll-behavior:smooth}
+html::-webkit-scrollbar{display:none}
+body{font-family:var(--grotesk)}
+
+/* ── FLOATING NAV ── */
+.fnav{position:fixed;right:2.5rem;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:12px;align-items:center}
+.fn-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all 0.3s;border:1px solid rgba(255,255,255,0.3)}
+.fn-dot:hover{background:rgba(255,255,255,0.6)}
+.fn-dot.active{background:#fff;transform:scale(1.4)}
+.fn-dot.dark{background:rgba(0,0,0,0.2);border-color:rgba(0,0,0,0.2)}
+.fn-dot.dark:hover{background:rgba(0,0,0,0.5)}
+.fn-dot.dark.active{background:var(--black)}
+
+/* ── LOGO ── */
+.site-logo{position:fixed;top:2rem;left:3rem;z-index:100;font-family:var(--grotesk);font-size:0.85rem;font-weight:700;letter-spacing:-0.02em;text-decoration:none;mix-blend-mode:difference;color:#fff}
+
+/* ── SECTIONS ── */
+section{scroll-snap-align:start;height:100vh;width:100%;position:relative;overflow:hidden}
+
+/* ── S0: HERO ── black, oversized type ── */
+#s0{background:var(--black);display:flex;flex-direction:column;justify-content:flex-end;padding:4rem 3rem}
+.s0-bg-text{position:absolute;top:50%;left:-2%;transform:translateY(-50%);font-family:var(--grotesk);font-size:clamp(12rem,22vw,22rem);font-weight:900;color:rgba(255,255,255,0.025);line-height:1;letter-spacing:-0.05em;white-space:nowrap;pointer-events:none;user-select:none}
+.s0-content{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end}
+.s0-left h1{font-family:var(--grotesk);font-size:clamp(3.5rem,7vw,7.5rem);font-weight:900;color:#fff;line-height:0.92;letter-spacing:-0.04em}
+.s0-left h1 .orange{color:var(--accent)}
+.s0-left h1 .serif{font-family:var(--serif);font-style:italic;font-weight:400}
+.s0-right{display:flex;flex-direction:column;justify-content:flex-end;gap:2rem}
+.s0-desc{font-size:1rem;color:rgba(255,255,255,0.45);line-height:1.8;max-width:360px;font-weight:300}
+.s0-cta{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:1rem 2rem;text-decoration:none;align-self:flex-start;transition:background 0.2s}
+.s0-cta:hover{background:var(--accent2)}
+.s0-tags{display:flex;gap:6px;flex-wrap:wrap}
+.s0-tag{font-size:0.62rem;font-weight:500;letter-spacing:0.06em;color:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.1);padding:3px 9px}
+.s0-bottom{border-top:1px solid rgba(255,255,255,0.07);padding-top:1.5rem;display:flex;gap:4rem;margin-top:2rem}
+.s0-stat-n{font-size:2.5rem;font-weight:900;color:#fff;line-height:1}
+.s0-stat-n span{color:var(--accent)}
+.s0-stat-l{font-size:0.62rem;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;font-weight:500}
+
+/* ── S1: PROYECTO 01 ── white ── */
+#s1{background:var(--white);display:grid;grid-template-columns:1fr 1fr;align-items:stretch}
+.s1-left{background:var(--accent);padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:space-between}
+.s1-left .sec-num{font-size:0.62rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:auto;padding-top:0.5rem}
+.s1-left h2{font-family:var(--grotesk);font-size:clamp(2.5rem,4vw,4.5rem);font-weight:900;color:#fff;line-height:0.95;letter-spacing:-0.04em;margin:auto 0}
+.s1-left h2 em{font-family:var(--serif);font-style:italic;font-weight:400;display:block;font-size:0.7em}
+.s1-left .s1-badge{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.3);padding:5px 12px;align-self:flex-start}
+.s1-right{padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:space-between}
+.s1-right p{font-size:0.95rem;color:var(--mid);line-height:1.85;font-weight:300;max-width:420px}
+.s1-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;flex:1;align-items:end;margin-top:2rem}
+.s1-col{padding:1.5rem 1.5rem 0 0;border-right:1px solid rgba(0,0,0,0.08)}
+.s1-col:last-child{border-right:none;padding-right:0}
+.s1-col-title{font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);margin-bottom:0.7rem}
+.s1-col p{font-size:0.78rem;color:var(--mid);line-height:1.7;font-weight:300}
+
+/* ── S2: PROYECTO 02 ── dark ── */
+#s2{background:#0f0f1a;display:grid;grid-template-columns:1fr 1fr;align-items:stretch}
+.s2-left{padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.05)}
+.s2-left .sec-num{font-size:0.62rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding-top:0.5rem}
+.s2-left h2{font-family:var(--grotesk);font-size:clamp(2.2rem,3.5vw,3.8rem);font-weight:900;color:#fff;line-height:0.95;letter-spacing:-0.04em}
+.s2-left h2 em{font-family:var(--serif);font-style:italic;font-weight:400;color:#7b7aff}
+.s2-left p{font-size:0.9rem;color:rgba(255,255,255,0.35);line-height:1.85;font-weight:300;max-width:380px}
+.s2-left .s2-badge{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#7b7aff;border:1px solid rgba(123,122,255,0.3);padding:5px 12px;align-self:flex-start}
+.s2-right{padding:4rem 3.5rem;display:flex;flex-direction:column;gap:1.5rem;justify-content:center}
+.s2-block{border:1px solid rgba(255,255,255,0.07);padding:1.5rem}
+.s2-block-title{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#7b7aff;margin-bottom:0.6rem}
+.s2-block p{font-size:0.83rem;color:rgba(255,255,255,0.35);line-height:1.7;font-weight:300}
+
+/* ── S3: PROCESO ── split vertical ── */
+#s3{background:var(--white);display:grid;grid-template-rows:auto 1fr}
+.s3-top{padding:3rem 3rem 2rem;display:flex;align-items:baseline;gap:2rem;border-bottom:2px solid var(--black)}
+.s3-top h2{font-family:var(--grotesk);font-size:clamp(3rem,6vw,6rem);font-weight:900;letter-spacing:-0.05em;line-height:1;color:var(--black)}
+.s3-top .s3-desc{font-size:0.9rem;color:var(--mid);line-height:1.75;max-width:400px;font-weight:300}
+.s3-steps{display:grid;grid-template-columns:repeat(5,1fr);height:100%}
+.s3-step{padding:2.5rem 2rem;border-right:1px solid rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:1rem;transition:background 0.3s}
+.s3-step:last-child{border-right:none}
+.s3-step:hover{background:var(--accent);color:#fff}
+.s3-step:hover .s3-step-n{color:rgba(255,255,255,0.3)}
+.s3-step:hover h4{color:#fff}
+.s3-step:hover p{color:rgba(255,255,255,0.65)}
+.s3-step-n{font-family:var(--grotesk);font-size:4rem;font-weight:900;color:rgba(0,0,0,0.06);line-height:1;transition:color 0.3s}
+.s3-step h4{font-size:0.9rem;font-weight:700;color:var(--black);transition:color 0.3s}
+.s3-step p{font-size:0.78rem;color:var(--mid);line-height:1.7;font-weight:300;transition:color 0.3s}
+
+/* ── S4: POR QUÉ ── full photo-style ── */
+#s4{background:var(--black);display:grid;grid-template-columns:1fr 1fr}
+.s4-left{background:#111;padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.05)}
+.s4-left h2{font-family:var(--grotesk);font-size:clamp(3rem,5vw,5.5rem);font-weight:900;color:#fff;line-height:0.95;letter-spacing:-0.04em}
+.s4-left h2 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent)}
+.s4-left p{font-size:0.95rem;color:rgba(255,255,255,0.35);line-height:1.85;font-weight:300;max-width:360px}
+.s4-right{padding:4rem 3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);align-content:start}
+.s4-item{background:var(--black);padding:2rem;transition:background 0.3s}
+.s4-item:hover{background:#1a1a1a}
+.s4-item-n{font-size:0.6rem;font-weight:700;color:rgba(255,255,255,0.15);letter-spacing:0.1em;margin-bottom:0.6rem}
+.s4-item h4{font-size:0.88rem;font-weight:700;color:#fff;margin-bottom:0.4rem}
+.s4-item p{font-size:0.78rem;color:rgba(255,255,255,0.3);line-height:1.65;font-weight:300}
+
+/* ── S5: CONTACTO ── orange ── */
+#s5{background:var(--accent);display:grid;grid-template-columns:1fr 1fr;align-items:stretch}
+.s5-left{padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.15)}
+.s5-left h2{font-family:var(--grotesk);font-size:clamp(4rem,7vw,8rem);font-weight:900;color:#fff;line-height:0.88;letter-spacing:-0.05em}
+.s5-left h2 em{font-family:var(--serif);font-style:italic;font-weight:400;display:block}
+.s5-facts{display:flex;flex-direction:column;gap:0;border-top:1px solid rgba(255,255,255,0.2)}
+.sf-row{display:flex;justify-content:space-between;padding:0.8rem 0;border-bottom:1px solid rgba(255,255,255,0.15);align-items:center}
+.sf-lbl{font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.5)}
+.sf-val{font-size:0.88rem;font-weight:500;color:#fff}
+.s5-right{padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:center;background:rgba(0,0,0,0.08)}
+.contact-form label{display:block;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:0.4rem}
+.contact-form input,.contact-form textarea,.contact-form select{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.25);color:#fff;font-family:var(--grotesk);font-size:0.875rem;padding:0.6rem 0;outline:none;transition:border-color 0.2s;-webkit-appearance:none;border-radius:0;margin-bottom:1.2rem}
+.contact-form input:focus,.contact-form textarea:focus,.contact-form select:focus{border-bottom-color:#fff}
+.contact-form input::placeholder,.contact-form textarea::placeholder{color:rgba(255,255,255,0.3)}
+.contact-form textarea{min-height:80px;resize:none;line-height:1.5}
+.contact-form select option{background:#c44028;color:#fff}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.btn-send{width:100%;background:#fff;color:var(--accent);font-family:var(--grotesk);font-size:0.75rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:0.9rem;border:none;cursor:pointer;transition:opacity 0.2s;margin-top:0.5rem}
+.btn-send:hover{opacity:0.85}
+.f-note{font-size:0.6rem;color:rgba(255,255,255,0.35);text-align:center;margin-top:0.7rem}
+.form-ok{display:none;text-align:center;padding:2rem}
+.form-ok h3{font-family:var(--serif);font-size:3rem;font-style:italic;color:#fff;margin-bottom:0.5rem}
+.form-ok p{font-size:0.85rem;color:rgba(255,255,255,0.6)}
+
+footer-bar{display:block;position:absolute;bottom:0;left:0;right:0;padding:1rem 3.5rem;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.15)}
+.fb-copy{font-size:0.65rem;color:rgba(255,255,255,0.35);font-weight:500}
+.fb-links{display:flex;gap:1.5rem}
+.fb-links a{font-size:0.65rem;color:rgba(255,255,255,0.35);text-decoration:none;font-weight:500;transition:color 0.2s}
+.fb-links a:hover{color:#fff}
+
+@media(max-width:900px){
+  html{scroll-snap-type:none}
+  section{height:auto;min-height:100vh}
+  #s0{padding:5rem 1.5rem 3rem;align-items:flex-start}
+  .s0-content,.s1-left,.s2-right,.s3-steps,.s4-right,.s5-right{grid-template-columns:1fr}
+  #s1,#s2,#s3,#s4,#s5{grid-template-columns:1fr}
+  .s1-cols,.f-row{grid-template-columns:1fr}
+  .s1-col{border-right:none;border-bottom:1px solid rgba(0,0,0,0.08);padding-right:0;padding-bottom:1rem;margin-bottom:1rem}
+  .s3-steps{grid-template-columns:1fr 1fr}
+  .s3-step{border-right:none;border-bottom:1px solid rgba(0,0,0,0.08)}
+  .s4-right{grid-template-columns:1fr}
+  .fnav{display:none}
+}
+</style>
+</head>
+<body>
+
+<a href="#s0" class="site-logo">[TuEmpresa]_security</a>
+
+<nav class="fnav" id="fnav">
+  <div class="fn-dot active" data-sec="0" onclick="goSec(0)" title="Inicio"></div>
+  <div class="fn-dot" data-sec="1" onclick="goSec(1)" title="Proyecto 01"></div>
+  <div class="fn-dot" data-sec="2" onclick="goSec(2)" title="Proyecto 02"></div>
+  <div class="fn-dot dark" data-sec="3" onclick="goSec(3)" title="Proceso"></div>
+  <div class="fn-dot" data-sec="4" onclick="goSec(4)" title="Nosotros"></div>
+  <div class="fn-dot" data-sec="5" onclick="goSec(5)" title="Contacto"></div>
+</nav>
+
+<!-- S0 HERO -->
+<section id="s0">
+  <div class="s0-bg-text">SEC</div>
+  <div class="s0-content">
+    <div class="s0-left">
+      <h1>
+        <span>SEGURIDAD</span><br>
+        <span class="orange">OFENSIVA</span><br>
+        <span class="serif">y gobierno</span><br>
+        <span>DEL DATO.</span>
+      </h1>
+    </div>
+    <div class="s0-right">
+      <p class="s0-desc">Identificamos vulnerabilidades reales antes que los atacantes. Protegemos su información con Microsoft Purview. Dos proyectos. Un interlocutor. Sin intermediarios.</p>
+      <div class="s0-tags">
+        <span class="s0-tag">Pentesting</span><span class="s0-tag">DLP</span><span class="s0-tag">Microsoft Purview</span><span class="s0-tag">OWASP</span><span class="s0-tag">NIS2</span><span class="s0-tag">ISO 27001</span>
+      </div>
+      <a href="#s1" class="s0-cta">Explorar proyectos →</a>
+      <div class="s0-bottom">
+        <div><div class="s0-stat-n">360<span>º</span></div><div class="s0-stat-l">Infra & Dato</div></div>
+        <div><div class="s0-stat-n">24<span>h</span></div><div class="s0-stat-l">Respuesta</div></div>
+        <div><div class="s0-stat-n">NIS2<span>+</span></div><div class="s0-stat-l">ISO·RGPD·ENS</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S1 PROYECTO 01 -->
+<section id="s1">
+  <div class="s1-left">
+    <div class="sec-num">// Proyecto 01</div>
+    <h2>Auditoría<br>de seguridad<br><em>y pentesting</em></h2>
+    <div class="s1-badge">Pentesting & Auditoría</div>
+  </div>
+  <div class="s1-right">
+    <p>Evaluación exhaustiva y proactiva de la postura de ciberseguridad. Abarca perímetro externo (aplicaciones web y servicios expuestos) e interno (red corporativa, Directorio Activo), simulando amenazas reales. Metodologías OWASP y PTES. Plan de acción priorizado para maximizar la resiliencia.</p>
+    <div class="s1-cols">
+      <div class="s1-col"><div class="s1-col-title">Objetivos</div><p>Evaluar integralmente su ciberseguridad para anticipar ataques, prevenir fugas y garantizar el cumplimiento normativo (ISO 27001, RGPD, ENS).</p></div>
+      <div class="s1-col"><div class="s1-col-title">Alcance</div><p>Auditorías Caja Negra, Gris y Blanca. Pruebas OWASP Top 10, red interna y Directorio Activo. Informes técnico-ejecutivos con PoC.</p></div>
+      <div class="s1-col"><div class="s1-col-title">Beneficios</div><p>Reducción drástica del riesgo tecnológico. Cumplimiento regulatorio, protección de marca y madurez hacia defensa en profundidad.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- S2 PROYECTO 02 -->
+<section id="s2">
+  <div class="s2-left">
+    <div class="sec-num">// Proyecto 02</div>
+    <h2>Clasificación,<br>cifrado y<br><em>prevención de fugas</em></h2>
+    <p>Implantación de modelo integral con Microsoft Purview Information Protection (MPIP) y Data Loss Prevention (DLP). Protección del dato durante todo su ciclo de vida en correo y cloud.</p>
+    <div class="s2-badge">DLP · Microsoft Purview</div>
+  </div>
+  <div class="s2-right">
+    <div class="s2-block"><div class="s2-block-title">Objetivos</div><p>Proteger información confidencial con clasificación y cifrado homogéneo. Prevenir exfiltraciones y garantizar cumplimiento ISO 27001 y RGPD.</p></div>
+    <div class="s2-block"><div class="s2-block-title">Capacidades / Alcance</div><p>Diseño e implantación MPIP y DLP. Modelo de clasificación y gobierno del dato integrado con Exchange, Teams, SharePoint y OneDrive.</p></div>
+    <div class="s2-block"><div class="s2-block-title">Beneficios</div><p>Visibilidad total sobre datos, reducción radical del riesgo de exposición y base sólida para eDiscovery e Insider Risk Management.</p></div>
+  </div>
+</section>
+
+<!-- S3 PROCESO -->
+<section id="s3">
+  <div class="s3-top">
+    <h2>PROCESO</h2>
+    <p class="s3-desc">Estructurado y transparente. Sabe en todo momento en qué fase está su proyecto y qué esperar de cada entrega.</p>
+  </div>
+  <div class="s3-steps">
+    <div class="s3-step"><div class="s3-step-n">01</div><h4>Reunión de alcance</h4><p>Definimos scope, modelo y objetivos. Sin coste ni compromiso.</p></div>
+    <div class="s3-step"><div class="s3-step-n">02</div><h4>Propuesta técnica</h4><p>Alcance, metodología, entregables y precio cerrado.</p></div>
+    <div class="s3-step"><div class="s3-step-n">03</div><h4>Trabajo técnico</h4><p>Ejecución con actualizaciones. Acceso directo al responsable.</p></div>
+    <div class="s3-step"><div class="s3-step-n">04</div><h4>Entrega de resultados</h4><p>Informe técnico + ejecutivo con PoC y plan de remediación.</p></div>
+    <div class="s3-step"><div class="s3-step-n">05</div><h4>Soporte post-proyecto</h4><p>Aclaramos hallazgos y validamos correcciones implementadas.</p></div>
+  </div>
+</section>
+
+<!-- S4 NOSOTROS -->
+<section id="s4">
+  <div class="s4-left">
+    <h2>Sin depar-<br>tamentos.<br><em>Solo resultados.</em></h2>
+    <p>Ofrecemos lo que las grandes consultoras no pueden: atención directa, agilidad real y precio justo.</p>
+  </div>
+  <div class="s4-right">
+    <div class="s4-item"><div class="s4-item-n">01</div><h4>Especialización total</h4><p>Solo pentesting y protección del dato. Conocemos los detalles que marcan la diferencia.</p></div>
+    <div class="s4-item"><div class="s4-item-n">02</div><h4>Interlocutor único</h4><p>Habla con quien ejecuta el trabajo. Sin cadenas de mando que distorsionen la información.</p></div>
+    <div class="s4-item"><div class="s4-item-n">03</div><h4>Informes accionables</h4><p>Hallazgos priorizados con PoC y pasos de remediación específicos.</p></div>
+    <div class="s4-item"><div class="s4-item-n">04</div><h4>Precio transparente</h4><p>Precio cerrado. Sin costes ocultos ni sorpresas de alcance.</p></div>
+    <div class="s4-item"><div class="s4-item-n">05</div><h4>Marco legal sólido</h4><p>Contrato de autorización expresa. RGPD y RC cubiertos desde el día 1.</p></div>
+    <div class="s4-item"><div class="s4-item-n">06</div><h4>Visión de continuidad</h4><p>Relaciones de largo plazo con revisiones periódicas.</p></div>
+  </div>
+</section>
+
+<!-- S5 CONTACTO -->
+<section id="s5">
+  <div class="s5-left">
+    <h2>Hable-<br><em>mos.</em></h2>
+    <div class="s5-facts">
+      <div class="sf-row"><span class="sf-lbl">Email</span><span class="sf-val">contacto@tuempresa.com</span></div>
+      <div class="sf-row"><span class="sf-lbl">Respuesta</span><span class="sf-val">— 24h laborables</span></div>
+      <div class="sf-row"><span class="sf-lbl">Cobertura</span><span class="sf-val">Internacional · remoto</span></div>
+    </div>
+    <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:1rem">© 2025 [TuEmpresa] Security · <a href="#" style="color:inherit">Privacidad</a></div>
+  </div>
+  <div class="s5-right">
+    <form id="cform" action="https://formspree.io/f/TU_ID_FORMSPREE" method="POST" class="contact-form">
+      <div class="f-row">
+        <div><label>Nombre *</label><input type="text" name="nombre" placeholder="Su nombre" required></div>
+        <div><label>Empresa</label><input type="text" name="empresa" placeholder="Su empresa"></div>
+      </div>
+      <label>Email *</label><input type="email" name="email" placeholder="su@empresa.com" required>
+      <label>Proyecto *</label>
+      <select name="proyecto" required>
+        <option value="" disabled selected>Seleccione un proyecto</option>
+        <option value="pentesting">Auditoría de Seguridad y Pentesting</option>
+        <option value="dlp">Clasificación, Cifrado y DLP (Microsoft Purview)</option>
+        <option value="ambos">Ambos proyectos</option>
+        <option value="consulta">Consulta general</option>
+      </select>
+      <label>Situación *</label><textarea name="msg" placeholder="¿Qué necesita proteger? ¿Usuarios / sistemas en scope? ¿Plazos o normativas?" required></textarea>
+      <input type="hidden" name="_subject" value="Nueva consulta — TuEmpresa Security">
+      <input type="text" name="_gotcha" style="display:none">
+      <button type="submit" class="btn-send">Enviar consulta →</button>
+      <p class="f-note">Datos tratados conforme al RGPD. Sin spam. Sin cesiones a terceros.</p>
+    </form>
+    <div class="form-ok" id="formOk"><h3>Recibido.</h3><p>Le responderemos en menos de 24 horas laborables.</p></div>
+  </div>
+</section>
+
+<script>
+const sections=document.querySelectorAll('section');
+const dots=document.querySelectorAll('.fn-dot');
+
+function goSec(i){sections[i].scrollIntoView({behavior:'smooth'})}
+
+const lightSecs=[3];
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const idx=[...sections].indexOf(e.target);
+      dots.forEach((d,i)=>{
+        d.classList.toggle('active',i===idx);
+        d.classList.toggle('dark',lightSecs.includes(i));
+      });
+    }
+  });
+},{threshold:0.5});
+sections.forEach(s=>observer.observe(s));
+
+const form=document.getElementById('cform');
+const ok=document.getElementById('formOk');
+form.addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const btn=form.querySelector('.btn-send');
+  btn.textContent='Enviando…';btn.disabled=true;
+  try{
+    const r=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+    if(r.ok){form.style.display='none';ok.style.display='block';}
+    else{btn.textContent='Error al enviar.';btn.disabled=false;}
+  }catch{btn.textContent='Error de conexión.';btn.disabled=false;}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[TuEmpresa] Security — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1117;
+  --bg2:#141820;
+  --bg3:#1a2030;
+  --panel:#1e2638;
+  --border:rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.1);
+  --text:#e2e8f0;
+  --muted:#8892a4;
+  --dim:#4a5568;
+  --green:#00d26a;
+  --green2:rgba(0,210,106,0.1);
+  --amber:#f59e0b;
+  --amber2:rgba(245,158,11,0.1);
+  --red:#ef4444;
+  --red2:rgba(239,68,68,0.1);
+  --blue:#3b82f6;
+  --blue2:rgba(59,130,246,0.1);
+  --cyan:#06b6d4;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;overflow-x:hidden}
+
+/* ── TOP BAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:0}
+.tb-logo{display:flex;align-items:center;gap:10px;padding-right:1.5rem;border-right:1px solid var(--border);height:100%}
+.tb-logo-icon{width:22px;height:22px;background:var(--green);border-radius:3px;display:flex;align-items:center;justify-content:center}
+.tb-logo-icon svg{width:12px;height:12px;fill:none;stroke:#000;stroke-width:2.5}
+.tb-logo-text{font-family:var(--mono);font-size:0.78rem;font-weight:600;color:var(--text);letter-spacing:-0.01em}
+.tb-logo-text span{color:var(--green)}
+.tb-nav{display:flex;align-items:center;height:100%;padding:0 1.5rem;gap:0}
+.tb-nav-item{height:100%;display:flex;align-items:center;padding:0 1rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;letter-spacing:0.02em;text-decoration:none}
+.tb-nav-item:hover{color:var(--text)}
+.tb-nav-item.active{color:var(--text);border-bottom-color:var(--green)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:1rem}
+.status-pill{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:0.65rem;color:var(--green);background:var(--green2);border:1px solid rgba(0,210,106,0.2);padding:3px 10px;border-radius:2px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.tb-cta{font-family:var(--mono);font-size:0.68rem;font-weight:500;color:#000;background:var(--green);padding:5px 14px;border-radius:2px;text-decoration:none;letter-spacing:0.04em;transition:opacity 0.2s}
+.tb-cta:hover{opacity:0.85}
+
+/* ── LAYOUT ── */
+.layout{margin-top:48px;display:grid;grid-template-columns:220px 1fr}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);min-height:calc(100vh - 48px);position:sticky;top:48px;height:calc(100vh - 48px);overflow-y:auto;display:flex;flex-direction:column}
+.sb-section{padding:1rem 0;border-bottom:1px solid var(--border)}
+.sb-section-label{font-family:var(--mono);font-size:0.6rem;font-weight:600;letter-spacing:0.12em;color:var(--dim);text-transform:uppercase;padding:0 1rem 0.5rem}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.5rem 1rem;cursor:pointer;transition:background 0.15s;text-decoration:none}
+.sb-item:hover{background:var(--bg3)}
+.sb-item.active{background:var(--panel)}
+.sb-item.active .sb-icon{color:var(--green)}
+.sb-item.active .sb-label{color:var(--text)}
+.sb-icon{width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim);flex-shrink:0}
+.sb-label{font-family:var(--mono);font-size:0.72rem;color:var(--muted);letter-spacing:0.02em}
+.sb-badge{margin-left:auto;font-family:var(--mono);font-size:0.58rem;background:var(--green2);color:var(--green);border:1px solid rgba(0,210,106,0.2);padding:1px 6px;border-radius:2px}
+.sb-footer{margin-top:auto;padding:1rem;border-top:1px solid var(--border)}
+.sb-footer-text{font-family:var(--mono);font-size:0.6rem;color:var(--dim);line-height:1.6}
+
+/* ── MAIN CONTENT ── */
+.main{padding:1.5rem;overflow-y:auto}
+.page-section{display:none}
+.page-section.active{display:block}
+
+/* ── BREADCRUMB ── */
+.breadcrumb{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:0.65rem;color:var(--dim);margin-bottom:1.5rem}
+.breadcrumb span{color:var(--muted)}
+.breadcrumb .sep{color:var(--dim)}
+
+/* ── SECTION HEADER ── */
+.sec-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.sh-left h1{font-size:1.2rem;font-weight:600;color:var(--text);letter-spacing:-0.01em;margin-bottom:0.3rem}
+.sh-left p{font-size:0.8rem;color:var(--muted);line-height:1.6}
+.sh-actions{display:flex;gap:8px}
+.sh-btn{font-family:var(--mono);font-size:0.65rem;font-weight:500;padding:5px 12px;border-radius:2px;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);transition:all 0.2s}
+.sh-btn:hover{color:var(--text);border-color:var(--text)}
+.sh-btn.primary{background:var(--green);color:#000;border-color:var(--green)}
+.sh-btn.primary:hover{opacity:0.85}
+
+/* ── METRIC CARDS ── */
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.metric-card{background:var(--panel);border:1px solid var(--border);padding:1.2rem;border-radius:2px;position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.metric-card.green::before{background:var(--green)}
+.metric-card.amber::before{background:var(--amber)}
+.metric-card.blue::before{background:var(--blue)}
+.metric-card.cyan::before{background:var(--cyan)}
+.mc-label{font-family:var(--mono);font-size:0.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.6rem}
+.mc-value{font-family:var(--mono);font-size:1.8rem;font-weight:600;color:var(--text);line-height:1;margin-bottom:0.4rem}
+.mc-value.green{color:var(--green)}
+.mc-value.amber{color:var(--amber)}
+.mc-value.blue{color:var(--blue)}
+.mc-value.cyan{color:var(--cyan)}
+.mc-sub{font-size:0.72rem;color:var(--muted)}
+
+/* ── GRID ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem}
+.grid-60-40{display:grid;grid-template-columns:3fr 2fr;gap:1rem;margin-bottom:1rem}
+
+/* ── PANELS ── */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:2px;overflow:hidden;margin-bottom:1rem}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;border-bottom:1px solid var(--border);background:var(--bg3)}
+.ph-title{font-family:var(--mono);font-size:0.72rem;font-weight:600;color:var(--text);letter-spacing:0.04em;text-transform:uppercase}
+.ph-badge{font-family:var(--mono);font-size:0.6rem;background:var(--green2);color:var(--green);border:1px solid rgba(0,210,106,0.2);padding:2px 8px;border-radius:2px}
+.ph-badge.amber{background:var(--amber2);color:var(--amber);border-color:rgba(245,158,11,0.2)}
+.ph-badge.blue{background:var(--blue2);color:var(--blue);border-color:rgba(59,130,246,0.2)}
+.panel-body{padding:1rem}
+
+/* ── SERVICE DETAIL ── */
+.svc-detail p{font-size:0.82rem;color:var(--muted);line-height:1.75;margin-bottom:1rem}
+.svc-tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.svc-tag{font-family:var(--mono);font-size:0.62rem;color:var(--muted);border:1px solid var(--border2);padding:2px 8px;border-radius:2px}
+.svc-tag.active{color:var(--green);background:var(--green2);border-color:rgba(0,210,106,0.2)}
+.svc-row{display:flex;align-items:flex-start;gap:10px;padding:0.7rem 0;border-bottom:1px solid var(--border)}
+.svc-row:last-child{border-bottom:none}
+.svc-row-icon{width:18px;height:18px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:2px}
+.svc-row-icon.ok{background:var(--green2);color:var(--green)}
+.svc-row-icon.warn{background:var(--amber2);color:var(--amber)}
+.svc-row-content h4{font-size:0.78rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.svc-row-content p{font-size:0.75rem;color:var(--muted);line-height:1.55}
+
+/* ── PROCESS TABLE ── */
+.process-table{width:100%;border-collapse:collapse}
+.pt-head th{font-family:var(--mono);font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--dim);padding:0.5rem 0.75rem;text-align:left;border-bottom:1px solid var(--border)}
+.pt-row td{padding:0.75rem;border-bottom:1px solid var(--border);font-size:0.78rem}
+.pt-row:last-child td{border-bottom:none}
+.pt-row:hover td{background:rgba(255,255,255,0.02)}
+.pt-num{font-family:var(--mono);color:var(--dim);font-size:0.65rem}
+.pt-name{color:var(--text);font-weight:500}
+.pt-desc{color:var(--muted)}
+.pt-status{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:0.62rem;padding:2px 8px;border-radius:2px}
+.pt-status.free{background:var(--green2);color:var(--green);border:1px solid rgba(0,210,106,0.2)}
+.pt-status.included{background:var(--blue2);color:var(--blue);border:1px solid rgba(59,130,246,0.2)}
+
+/* ── WHY ── */
+.why-item-dash{display:grid;grid-template-columns:24px 1fr;gap:12px;padding:0.7rem 0;border-bottom:1px solid var(--border);align-items:start}
+.why-item-dash:last-child{border-bottom:none}
+.wi-num{font-family:var(--mono);font-size:0.65rem;color:var(--dim);padding-top:2px}
+.wi-body h4{font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.wi-body p{font-size:0.75rem;color:var(--muted);line-height:1.6}
+
+/* ── TERMINAL ── */
+.terminal-panel{background:var(--bg);border:1px solid var(--border);border-radius:2px;overflow:hidden}
+.tp-bar{background:var(--bg3);padding:0.5rem 1rem;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.tp-dot{width:8px;height:8px;border-radius:50%}
+.tp-dot.r{background:#ff5f56}.tp-dot.y{background:#ffbd2e}.tp-dot.g{background:#27c93f}
+.tp-title{font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-left:6px}
+.tp-body{padding:1rem;font-family:var(--mono);font-size:0.72rem;line-height:2}
+.tc{color:var(--green)}.tm{color:var(--dim)}.tok{color:#27c93f}.tw{color:var(--amber)}.te{color:var(--red)}
+.tb-blink{display:inline-block;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── CONTACT FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fg{margin-bottom:0.8rem}
+.fg label{display:block;font-family:var(--mono);font-size:0.6rem;font-weight:500;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem}
+.fg input,.fg textarea,.fg select{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.78rem;padding:0.55rem 0.75rem;outline:none;transition:border-color 0.2s;-webkit-appearance:none;border-radius:2px}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--green)}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--dim)}
+.fg textarea{min-height:90px;resize:vertical;line-height:1.5}
+.fg select option{background:var(--bg2);color:var(--text)}
+.fg.full{grid-column:1/-1}
+.btn-submit{background:var(--green);color:#000;font-family:var(--mono);font-size:0.7rem;font-weight:600;padding:0.65rem 1.5rem;border:none;cursor:pointer;letter-spacing:0.06em;transition:opacity 0.2s;border-radius:2px}
+.btn-submit:hover{opacity:0.85}
+.f-note{font-family:var(--mono);font-size:0.6rem;color:var(--dim);margin-top:0.6rem;line-height:1.6}
+.form-ok{display:none;padding:2rem;text-align:center}
+.form-ok h3{font-family:var(--mono);font-size:1rem;color:var(--green);margin-bottom:0.4rem}
+.form-ok p{font-size:0.78rem;color:var(--muted)}
+
+/* MOBILE */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .metrics-row{grid-template-columns:1fr 1fr}
+  .grid-2,.grid-3,.grid-60-40,.form-grid{grid-template-columns:1fr}
+  .fg.full{grid-column:1}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="tb-logo">
+    <div class="tb-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 3l9 4.5v5c0 5-4 9.5-9 10.5C7 22 3 17.5 3 12.5v-5L12 3z"/></svg></div>
+    <span class="tb-logo-text">[Tu<span>Empresa</span>]_sec</span>
+  </div>
+  <nav class="tb-nav">
+    <a class="tb-nav-item active" onclick="showPage('overview')" href="#">Overview</a>
+    <a class="tb-nav-item" onclick="showPage('projects')" href="#">Projects</a>
+    <a class="tb-nav-item" onclick="showPage('process')" href="#">Process</a>
+    <a class="tb-nav-item" onclick="showPage('about')" href="#">About</a>
+    <a class="tb-nav-item" onclick="showPage('contact')" href="#">Contact</a>
+  </nav>
+  <div class="tb-right">
+    <div class="status-pill"><span class="status-dot"></span>Sistemas operativos</div>
+    <a href="#" class="tb-cta" onclick="showPage('contact');return false">Solicitar propuesta</a>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-section-label">Principal</div>
+      <a class="sb-item active" onclick="showPage('overview')" href="#"><span class="sb-icon">◈</span><span class="sb-label">Overview</span><span class="sb-badge">activo</span></a>
+      <a class="sb-item" onclick="showPage('projects')" href="#"><span class="sb-icon">⬡</span><span class="sb-label">Proyectos</span></a>
+      <a class="sb-item" onclick="showPage('process')" href="#"><span class="sb-icon">⊞</span><span class="sb-label">Proceso</span></a>
+      <a class="sb-item" onclick="showPage('about')" href="#"><span class="sb-icon">◎</span><span class="sb-label">Por qué nosotros</span></a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Servicios</div>
+      <a class="sb-item" onclick="showPage('projects')" href="#"><span class="sb-icon">▷</span><span class="sb-label">Pentesting & Auditoría</span></a>
+      <a class="sb-item" onclick="showPage('projects')" href="#"><span class="sb-icon">▷</span><span class="sb-label">DLP · Purview</span></a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Compliance</div>
+      <a class="sb-item" href="#"><span class="sb-icon">✓</span><span class="sb-label">ISO/IEC 27001</span></a>
+      <a class="sb-item" href="#"><span class="sb-icon">✓</span><span class="sb-label">RGPD</span></a>
+      <a class="sb-item" href="#"><span class="sb-icon">✓</span><span class="sb-label">NIS2</span></a>
+      <a class="sb-item" href="#"><span class="sb-icon">✓</span><span class="sb-label">ENS</span></a>
+      <a class="sb-item" href="#"><span class="sb-icon">✓</span><span class="sb-label">PCI-DSS</span></a>
+      <a class="sb-item" href="#"><span class="sb-icon">✓</span><span class="sb-label">OWASP Top 10</span></a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Contacto</div>
+      <a class="sb-item" onclick="showPage('contact')" href="#"><span class="sb-icon">→</span><span class="sb-label">Solicitar propuesta</span></a>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-footer-text">© 2025 [TuEmpresa] Security<br>Pentesting · DLP · Purview<br><a href="#" style="color:var(--green);text-decoration:none">Política de privacidad</a></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <div class="page-section active" id="page-overview">
+      <div class="breadcrumb"><span>TuEmpresa Security</span><span class="sep">/</span><span>Overview</span></div>
+      <div class="sec-header">
+        <div class="sh-left">
+          <h1>Panel general</h1>
+          <p>Ciberseguridad para empresas — Pentesting · DLP Microsoft Purview · Ámbito Internacional</p>
+        </div>
+        <div class="sh-actions">
+          <button class="sh-btn primary" onclick="showPage('contact')">Solicitar propuesta →</button>
+        </div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric-card green">
+          <div class="mc-label">Cobertura</div>
+          <div class="mc-value green">360º</div>
+          <div class="mc-sub">Infraestructura & Dato</div>
+        </div>
+        <div class="metric-card amber">
+          <div class="mc-label">Respuesta inicial</div>
+          <div class="mc-value amber">24h</div>
+          <div class="mc-sub">Laborables · sin compromiso</div>
+        </div>
+        <div class="metric-card blue">
+          <div class="mc-label">Proyectos activos</div>
+          <div class="mc-value blue">2</div>
+          <div class="mc-sub">Pentesting · DLP Purview</div>
+        </div>
+        <div class="metric-card cyan">
+          <div class="mc-label">Normativa cubierta</div>
+          <div class="mc-value cyan">NIS2+</div>
+          <div class="mc-sub">ISO · RGPD · ENS · PCI-DSS</div>
+        </div>
+      </div>
+
+      <div class="grid-60-40">
+        <div class="panel">
+          <div class="panel-header"><span class="ph-title">Descripción del servicio</span><span class="ph-badge blue">v1.0 active</span></div>
+          <div class="panel-body">
+            <p style="font-size:0.82rem;color:var(--muted);line-height:1.8;margin-bottom:1rem">Identificamos vulnerabilidades reales en su infraestructura antes que los atacantes. Clasificamos, ciframos y protegemos su información sensible con Microsoft Purview. Dos proyectos especializados. Un interlocutor. Sin intermediarios.</p>
+            <div class="terminal-panel">
+              <div class="tp-bar"><div class="tp-dot r"></div><div class="tp-dot y"></div><div class="tp-dot g"></div><span class="tp-title">audit_scope.sh — Pentesting & DLP</span></div>
+              <div class="tp-body">
+                <div><span class="tc">$</span> <span class="tm"># Pentesting — reconocimiento</span></div>
+                <div><span class="tc">$</span> nmap -sV --script vuln target.empresa.es</div>
+                <div><span class="tok">✓</span> PORT 443 — SSL/TLS activo</div>
+                <div><span class="tw">!</span> CVE-2024-xxxx — CVSS 9.8 crítico</div>
+                <div><span class="te">✗</span> SQLi /api/v2/search — confirmada</div>
+                <div><span class="tc">$</span> <span class="tm"># DLP — Microsoft Purview</span></div>
+                <div><span class="tc">$</span> purview scan --policy dlp_corp_v2</div>
+                <div><span class="tok">✓</span> 1.247 archivos clasificados</div>
+                <div><span class="tw">!</span> 34 sin etiqueta de sensibilidad</div>
+                <div><span class="tc">$</span> <span class="tb-blink">▌</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="panel-header"><span class="ph-title">Proyectos disponibles</span></div>
+            <div class="panel-body">
+              <div class="svc-row"><div class="svc-row-icon ok">✓</div><div class="svc-row-content"><h4>Pentesting & Auditoría</h4><p>Infraestructura y aplicaciones web. Caja Negra, Gris y Blanca.</p></div></div>
+              <div class="svc-row"><div class="svc-row-icon ok">✓</div><div class="svc-row-content"><h4>DLP · Microsoft Purview</h4><p>Clasificación, cifrado y prevención de fugas. Correo y Cloud.</p></div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="ph-title">Estado del servicio</span><span class="ph-badge">operativo</span></div>
+            <div class="panel-body">
+              <div class="svc-row"><div class="svc-row-icon ok">●</div><div class="svc-row-content"><h4>Servicio activo</h4><p>Disponible para nuevos proyectos</p></div></div>
+              <div class="svc-row"><div class="svc-row-icon ok">●</div><div class="svc-row-content"><h4>Respuesta &lt; 24h</h4><p>Tiempo de respuesta inicial garantizado</p></div></div>
+              <div class="svc-row"><div class="svc-row-icon ok">●</div><div class="svc-row-content"><h4>Ámbito Internacional</h4><p>100% remoto</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="page-section" id="page-projects">
+      <div class="breadcrumb"><span>TuEmpresa Security</span><span class="sep">/</span><span>Proyectos</span></div>
+      <div class="sec-header">
+        <div class="sh-left"><h1>Proyectos</h1><p>Dos servicios especializados. Metodología OWASP, PTES y Microsoft Purview.</p></div>
+        <div class="sh-actions"><button class="sh-btn primary" onclick="showPage('contact')">Solicitar propuesta →</button></div>
+      </div>
+
+      <div class="panel" style="margin-bottom:1rem">
+        <div class="panel-header"><span class="ph-title">Proyecto 01 — Auditoría de Seguridad y Pentesting</span><span class="ph-badge">Pentesting</span></div>
+        <div class="panel-body">
+          <div class="svc-detail">
+            <p>Proyecto orientado a la evaluación exhaustiva y proactiva de la postura de ciberseguridad. Abarca perímetro externo (aplicaciones web y servicios expuestos) e interno (red corporativa, Directorio Activo), simulando amenazas reales mediante metodologías OWASP y PTES. Plan de acción priorizado para maximizar la resiliencia.</p>
+            <div class="svc-tag-row">
+              <span class="svc-tag active">OWASP Top 10</span><span class="svc-tag active">PTES</span><span class="svc-tag active">Caja Negra</span><span class="svc-tag active">Caja Gris</span><span class="svc-tag active">Caja Blanca</span><span class="svc-tag">ISO 27001</span><span class="svc-tag">ENS</span><span class="svc-tag">PCI-DSS</span>
+            </div>
+          </div>
+          <div class="grid-3">
+            <div class="panel" style="margin:0;border:1px solid var(--border)">
+              <div class="panel-header" style="background:var(--bg)"><span class="ph-title" style="font-size:0.6rem">Objetivos</span></div>
+              <div class="panel-body">
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Evaluar integralmente su ciberseguridad para anticipar ataques, prevenir fugas y garantizar el cumplimiento normativo.</p></div></div>
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Validar la eficacia real de las defensas y sistemas de monitorización (SOC/SIEM).</p></div></div>
+              </div>
+            </div>
+            <div class="panel" style="margin:0;border:1px solid var(--border)">
+              <div class="panel-header" style="background:var(--bg)"><span class="ph-title" style="font-size:0.6rem">Alcance</span></div>
+              <div class="panel-body">
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Auditorías Caja Negra, Gris y Blanca. Pruebas OWASP Top 10, red interna y Directorio Activo.</p></div></div>
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Informes técnico-ejecutivos con pruebas de concepto (PoC) y planes de remediación priorizados.</p></div></div>
+              </div>
+            </div>
+            <div class="panel" style="margin:0;border:1px solid var(--border)">
+              <div class="panel-header" style="background:var(--bg)"><span class="ph-title" style="font-size:0.6rem">Beneficios</span></div>
+              <div class="panel-body">
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Reducción drástica del riesgo tecnológico. Cumplimiento regulatorio y protección de la reputación.</p></div></div>
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Madurez hacia un modelo proactivo de defensa en profundidad.</p></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><span class="ph-title">Proyecto 02 — Clasificación, Cifrado y DLP</span><span class="ph-badge blue">DLP · Purview</span></div>
+        <div class="panel-body">
+          <div class="svc-detail">
+            <p>Implantación de modelo integral de clasificación, cifrado y prevención de fugas de información. Combina Microsoft Purview Information Protection (MPIP) y Data Loss Prevention (DLP) para proteger el dato durante todo su ciclo de vida en correo y plataformas cloud.</p>
+            <div class="svc-tag-row">
+              <span class="svc-tag active">Microsoft Purview</span><span class="svc-tag active">MPIP</span><span class="svc-tag active">DLP</span><span class="svc-tag active">Exchange</span><span class="svc-tag active">Teams</span><span class="svc-tag active">SharePoint</span><span class="svc-tag">OneDrive</span><span class="svc-tag">ISO 27001</span><span class="svc-tag">RGPD</span>
+            </div>
+          </div>
+          <div class="grid-3">
+            <div class="panel" style="margin:0;border:1px solid var(--border)">
+              <div class="panel-header" style="background:var(--bg)"><span class="ph-title" style="font-size:0.6rem">Objetivos</span></div>
+              <div class="panel-body">
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Proteger información confidencial con clasificación y cifrado homogéneo. Prevenir exfiltraciones.</p></div></div>
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Garantizar cumplimiento ISO 27001 y RGPD con control y trazabilidad absolutos.</p></div></div>
+              </div>
+            </div>
+            <div class="panel" style="margin:0;border:1px solid var(--border)">
+              <div class="panel-header" style="background:var(--bg)"><span class="ph-title" style="font-size:0.6rem">Alcance</span></div>
+              <div class="panel-body">
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Despliegue MPIP y DLP. Modelo de clasificación y gobierno del dato.</p></div></div>
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Integrado con Exchange, Teams, SharePoint y OneDrive.</p></div></div>
+              </div>
+            </div>
+            <div class="panel" style="margin:0;border:1px solid var(--border)">
+              <div class="panel-header" style="background:var(--bg)"><span class="ph-title" style="font-size:0.6rem">Beneficios</span></div>
+              <div class="panel-body">
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Visibilidad total sobre datos y reducción radical del riesgo de exposición.</p></div></div>
+                <div class="svc-row"><div class="svc-row-icon ok">→</div><div class="svc-row-content"><p>Base sólida para eDiscovery e Insider Risk Management.</p></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROCESS -->
+    <div class="page-section" id="page-process">
+      <div class="breadcrumb"><span>TuEmpresa Security</span><span class="sep">/</span><span>Proceso</span></div>
+      <div class="sec-header">
+        <div class="sh-left"><h1>Metodología de trabajo</h1><p>Proceso estructurado y transparente. Sabe en todo momento en qué fase está su proyecto.</p></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span class="ph-title">Flujo del proyecto</span><span class="ph-badge">5 fases</span></div>
+        <div class="panel-body">
+          <table class="process-table">
+            <thead class="pt-head"><tr><th>#</th><th>Fase</th><th>Descripción</th><th>Entregable</th><th>Coste</th></tr></thead>
+            <tbody>
+              <tr class="pt-row"><td class="pt-num">01</td><td class="pt-name">Reunión de alcance</td><td class="pt-desc">Definimos sistemas en scope, modelo de auditoría y objetivos. Sin compromiso.</td><td class="pt-desc">Acta de alcance</td><td><span class="pt-status free">Sin coste</span></td></tr>
+              <tr class="pt-row"><td class="pt-num">02</td><td class="pt-name">Propuesta técnica</td><td class="pt-desc">Documento de alcance, metodología, entregables y precio cerrado.</td><td class="pt-desc">Propuesta firmada</td><td><span class="pt-status free">Sin coste</span></td></tr>
+              <tr class="pt-row"><td class="pt-num">03</td><td class="pt-name">Trabajo técnico</td><td class="pt-desc">Ejecución con actualizaciones periódicas. Acceso directo al responsable.</td><td class="pt-desc">Actualizaciones</td><td><span class="pt-status included">Incluido</span></td></tr>
+              <tr class="pt-row"><td class="pt-num">04</td><td class="pt-name">Entrega de resultados</td><td class="pt-desc">Informe ejecutivo + técnico con hallazgos priorizados, PoC y plan de remediación.</td><td class="pt-desc">Informe completo</td><td><span class="pt-status included">Incluido</span></td></tr>
+              <tr class="pt-row"><td class="pt-num">05</td><td class="pt-name">Soporte post-proyecto</td><td class="pt-desc">Disponibles para aclarar hallazgos y validar correcciones implementadas.</td><td class="pt-desc">Soporte técnico</td><td><span class="pt-status included">Incluido</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="page-section" id="page-about">
+      <div class="breadcrumb"><span>TuEmpresa Security</span><span class="sep">/</span><span>Por qué nosotros</span></div>
+      <div class="sec-header">
+        <div class="sh-left"><h1>Sin departamentos. Solo resultados.</h1><p>Ofrecemos lo que las grandes consultoras no pueden: atención directa, agilidad real y precio justo.</p></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><span class="ph-title">Propuesta de valor</span></div>
+          <div class="panel-body">
+            <div class="why-item-dash"><span class="wi-num">01</span><div class="wi-body"><h4>Especialización total</h4><p>Solo pentesting y protección del dato. Conocemos los detalles que marcan la diferencia.</p></div></div>
+            <div class="why-item-dash"><span class="wi-num">02</span><div class="wi-body"><h4>Interlocutor único</h4><p>Habla con quien ejecuta el trabajo. Sin cadenas de mando que distorsionen la información técnica.</p></div></div>
+            <div class="why-item-dash"><span class="wi-num">03</span><div class="wi-body"><h4>Informes accionables</h4><p>Hallazgos priorizados con PoC reproducibles y pasos de remediación específicos.</p></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="ph-title">Modelo operativo</span></div>
+          <div class="panel-body">
+            <div class="why-item-dash"><span class="wi-num">04</span><div class="wi-body"><h4>Precio transparente</h4><p>Precio cerrado desde el inicio. Sin costes ocultos. Cambios de alcance se acuerdan antes.</p></div></div>
+            <div class="why-item-dash"><span class="wi-num">05</span><div class="wi-body"><h4>Marco legal sólido</h4><p>Contrato de autorización expresa. RGPD y responsabilidad civil cubiertos desde el día 1.</p></div></div>
+            <div class="why-item-dash"><span class="wi-num">06</span><div class="wi-body"><h4>Visión de continuidad</h4><p>Relaciones de largo plazo con revisiones periódicas que evolucionan con su empresa.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="page-section" id="page-contact">
+      <div class="breadcrumb"><span>TuEmpresa Security</span><span class="sep">/</span><span>Contacto</span></div>
+      <div class="sec-header">
+        <div class="sh-left"><h1>Solicitar propuesta</h1><p>En menos de 24 horas recibirá respuesta con orientación técnica inicial sin ningún compromiso.</p></div>
+      </div>
+      <div class="grid-60-40">
+        <div class="panel">
+          <div class="panel-header"><span class="ph-title">Formulario de contacto</span></div>
+          <div class="panel-body">
+            <form id="cform" action="https://formspree.io/f/TU_ID_FORMSPREE" method="POST">
+              <div class="form-grid">
+                <div class="fg"><label>Nombre *</label><input type="text" name="nombre" placeholder="Su nombre" required></div>
+                <div class="fg"><label>Empresa</label><input type="text" name="empresa" placeholder="Su empresa"></div>
+                <div class="fg"><label>Email *</label><input type="email" name="email" placeholder="su@empresa.com" required></div>
+                <div class="fg">
+                  <label>Proyecto de interés *</label>
+                  <select name="proyecto" required>
+                    <option value="" disabled selected>Seleccione...</option>
+                    <option value="pentesting">Auditoría de Seguridad y Pentesting</option>
+                    <option value="dlp">Clasificación, Cifrado y DLP (Microsoft Purview)</option>
+                    <option value="ambos">Ambos proyectos</option>
+                    <option value="consulta">Consulta general</option>
+                  </select>
+                </div>
+                <div class="fg full"><label>Descripción de la situación *</label><textarea name="msg" placeholder="¿Qué necesita proteger? ¿Cuántos usuarios o sistemas están en scope? ¿Tiene algún plazo o requerimiento normativo específico?" required></textarea></div>
+              </div>
+              <input type="hidden" name="_subject" value="Nueva consulta — TuEmpresa Security">
+              <input type="text" name="_gotcha" style="display:none">
+              <button type="submit" class="btn-submit">Enviar consulta →</button>
+              <p class="f-note">Datos tratados conforme al RGPD. Sin spam. Sin cesiones a terceros.</p>
+            </form>
+            <div class="form-ok" id="formOk"><h3>// Consulta recibida.</h3><p>Le responderemos en menos de 24 horas laborables con orientación técnica inicial.</p></div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="panel-header"><span class="ph-title">Datos de contacto</span><span class="ph-badge">24h SLA</span></div>
+            <div class="panel-body">
+              <div class="svc-row"><div class="svc-row-icon ok">✉</div><div class="svc-row-content"><h4>Email</h4><p>contacto@tuempresa.com</p></div></div>
+              <div class="svc-row"><div class="svc-row-icon ok">⏱</div><div class="svc-row-content"><h4>Tiempo de respuesta</h4><p>Menos de 24 horas laborables</p></div></div>
+              <div class="svc-row"><div class="svc-row-icon ok">🌍</div><div class="svc-row-content"><h4>Cobertura</h4><p>Ámbito Internacional · 100% remoto</p></div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="ph-title">Documentación previa</span></div>
+            <div class="panel-body">
+              <div class="svc-row"><div class="svc-row-icon warn">!</div><div class="svc-row-content"><h4>NDA disponible</h4><p>Acuerdo de confidencialidad previo a cualquier reunión técnica</p></div></div>
+              <div class="svc-row"><div class="svc-row-icon warn">!</div><div class="svc-row-content"><h4>Propuesta sin compromiso</h4><p>Primera reunión y propuesta técnica siempre gratuitas</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const pages=['overview','projects','process','about','contact'];
+function showPage(id){
+  pages.forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    if(el)el.classList.toggle('active',p===id);
+  });
+  document.querySelectorAll('.tb-nav-item').forEach((item,i)=>{
+    item.classList.toggle('active',pages[i]===id);
+  });
+  document.querySelectorAll('.sb-item').forEach(item=>{
+    const fn=item.getAttribute('onclick');
+    if(fn)item.classList.toggle('active',fn.includes("'"+id+"'"));
+  });
+  window.scrollTo(0,0);
+}
+
+const form=document.getElementById('cform');
+const ok=document.getElementById('formOk');
+form.addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const btn=form.querySelector('.btn-submit');
+  btn.textContent='Enviando…';btn.disabled=true;
+  try{
+    const r=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+    if(r.ok){form.style.display='none';ok.style.display='block';}
+    else{btn.textContent='Error al enviar.';btn.disabled=false;}
+  }catch{btn.textContent='Error de conexión.';btn.disabled=false;}
+});
+</script>
+</body>
+</html>
