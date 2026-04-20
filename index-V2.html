@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TuEmpresa Security | Pentesting & Protección del Dato · España</title>
+<meta name="description" content="Auditoría de seguridad y pentesting de infraestructura y aplicaciones web. Clasificación, cifrado y prevención de fugas de información con Microsoft Purview. Servicios profesionales de ciberseguridad para empresas en España.">
+<meta name="keywords" content="pentesting España, auditoría seguridad, DLP Microsoft Purview, prevención fuga datos, hacking ético, OWASP, NIS2, ISO 27001, ciberseguridad empresas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:   #fafaf8;
+  --ink2:  #f4f3ef;
+  --ink3:  #eceae3;
+  --panel: #ffffff;
+  --glass: rgba(0,0,0,0.02);
+  --line:  #ddd9d0;
+  --line2: rgba(201,168,76,0.40);
+  --text:  #1a1a1a;
+  --muted: #5a5a5a;
+  --dim:   #9a9a9a;
+  --teal:  #c9a84c;
+  --teal2: #e8c97a;
+  --red:   #c0392b;
+  --navy:  #0f2444;
+  --navy2: #1a3a6b;
+  --mono:  'IBM Plex Mono', monospace;
+  --body:  'DM Sans', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.7;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(15,36,68,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(15,36,68,0.04) 1px,transparent 1px);background-size:80px 80px;pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 6%;background:rgba(245,247,250,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.logo{font-family:var(--mono);font-size:0.88rem;color:var(--text);text-decoration:none;font-style:normal}
+.logo em{color:var(--teal);font-style:normal}
+.nav-right{display:flex;align-items:center;gap:1rem}
+nav ul{display:flex;gap:2.5rem;list-style:none;align-items:center}
+nav a{font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.2s}
+nav a:hover{color:var(--navy)}
+.nav-cta{color:var(--navy)!important;background:var(--teal)!important;border:none!important;padding:0.4rem 1rem;border-radius:3px;transition:background 0.2s!important}
+.nav-cta:hover{background:var(--teal2)!important;color:var(--navy)!important}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hamburger span{display:block;width:22px;height:1px;background:var(--navy)}
+
+/* LANG SWITCHER */
+.lang-switcher{display:flex;align-items:center;gap:0;border:1px solid var(--line2);border-radius:3px;overflow:hidden;flex-shrink:0}
+.lang-btn{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.06em;padding:0.35rem 0.7rem;background:transparent;color:var(--muted);border:none;cursor:pointer;transition:background 0.2s,color 0.2s;text-transform:uppercase}
+.lang-btn.active{background:var(--teal);color:var(--navy);font-weight:700}
+.lang-btn:not(.active):hover{color:var(--navy)}
+.lang-sep{width:1px;height:100%;background:var(--line2)}
+
+/* HERO */
+#hero{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:72px;overflow:hidden;background:var(--navy)}
+.hero-left{padding:7rem 6% 6rem;display:flex;flex-direction:column;justify-content:center}
+.hero-right{display:flex;align-items:center;justify-content:center;padding:4rem 6% 4rem 2rem;position:relative}
+.hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);top:-100px;right:-100px;pointer-events:none}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:0.7rem;color:var(--teal2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2rem;animation:up 0.7s ease both}
+.dot-p{width:7px;height:7px;border-radius:50%;background:var(--teal2);animation:pulse 2.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.7)}}
+h1{font-size:clamp(2.6rem,4.5vw,4.4rem);font-weight:800;line-height:1.06;letter-spacing:-0.04em;margin-bottom:1.8rem;animation:up 0.7s 0.1s ease both;font-style:normal;color:#fff}
+h1 .ac{color:var(--teal2)}
+h1 .ln2{display:block;color:rgba(255,255,255,0.45);font-weight:300}
+.hero-sub{font-size:1.02rem;color:rgba(255,255,255,0.6);line-height:1.85;max-width:500px;margin-bottom:2.5rem;animation:up 0.7s 0.2s ease both}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;animation:up 0.7s 0.3s ease both}
+.btn-main{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:var(--navy);font-family:var(--mono);font-size:0.8rem;font-weight:700;padding:0.9rem 2rem;border-radius:3px;text-decoration:none;transition:opacity 0.2s,transform 0.15s}
+.btn-main:hover{background:var(--teal2);opacity:1;transform:translateY(-2px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;background:transparent;color:rgba(255,255,255,0.75);font-family:var(--mono);font-size:0.8rem;padding:0.9rem 2rem;border:1px solid rgba(255,255,255,0.2);border-radius:3px;text-decoration:none;transition:border-color 0.2s,color 0.2s}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.5);color:#fff}
+.hero-stats{display:flex;gap:2.5rem;margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.1);flex-wrap:wrap;animation:up 0.7s 0.4s ease both}
+.stat-n{font-size:1.9rem;font-weight:800;letter-spacing:-0.04em;line-height:1;color:#fff}
+.stat-n span{color:var(--teal2)}
+.stat-l{font-family:var(--mono);font-size:0.63rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* TERMINAL */
+.terminal{background:#0f1e30;border:1px solid rgba(255,255,255,0.1);border-radius:10px;width:100%;max-width:480px;font-family:var(--mono);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.35);animation:up 0.9s 0.4s ease both}
+.t-bar{background:#0a1525;padding:0.75rem 1rem;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.td{width:10px;height:10px;border-radius:50%}
+.td.r{background:#ff5f56}.td.y{background:#ffbd2e}.td.g{background:#27c93f}
+.t-title{font-size:0.65rem;color:#5a7a9a;margin-left:4px}
+.t-body{padding:1.5rem}
+.tl{font-size:0.73rem;line-height:2.1}
+.tc{color:var(--teal2)}.tm{color:#5a7060}.tok{color:#27c93f}.tw{color:#ffbd2e}.te{color:#e05555}
+.tb{display:inline-block;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* STRIP */
+.strip{position:relative;z-index:1;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;padding:1.2rem 6%;background:var(--ink3);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.strip-lbl{font-family:var(--mono);font-size:0.63rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap}
+.strip-tags{display:flex;gap:10px;flex-wrap:wrap}
+.strip-tag{font-family:var(--mono);font-size:0.67rem;color:var(--teal);border:1px solid var(--line2);padding:3px 10px;border-radius:2px;background:rgba(8,100,163,0.05)}
+
+/* SECTIONS */
+section{position:relative;z-index:1;padding:8rem 6%}
+.sec-lbl{font-family:var(--mono);font-size:0.68rem;color:var(--teal);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.8rem}
+h2{font-size:clamp(2rem,3.5vw,3rem);font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.8rem;font-style:normal;color:var(--navy)}
+.sec-desc{font-size:1rem;color:var(--muted);max-width:540px;line-height:1.85;margin-bottom:4rem}
+
+/* SERVICE BLOCK */
+.svc-block{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:visible;margin-bottom:2rem;box-shadow:0 2px 20px rgba(15,36,68,0.06)}
+.svc-head{display:grid;grid-template-columns:1fr auto;align-items:start;gap:2rem;padding:3rem 3.5rem 2.5rem;border-bottom:1px solid var(--line);background:var(--ink2)}
+.svc-num{font-family:var(--mono);font-size:0.68rem;color:var(--teal);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.8rem}
+.svc-head h3{font-size:clamp(1.3rem,2.5vw,1.9rem);font-weight:700;letter-spacing:-0.03em;line-height:1.25;margin-bottom:1rem;font-style:normal;color:var(--navy)}
+.svc-head p{font-size:0.92rem;color:var(--muted);line-height:1.85;max-width:640px}
+.svc-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:0.67rem;color:var(--teal);border:1px solid var(--line2);padding:0.5rem 1rem;border-radius:3px;white-space:nowrap;align-self:flex-start;background:rgba(201,168,76,0.06)}
+.svc-cols{display:grid;grid-template-columns:1fr 1fr 1fr;overflow:hidden;max-height:0;transition:max-height 0.5s ease,opacity 0.4s ease;opacity:0;border-top:0px solid var(--line);border-radius:0 0 12px 12px}
+.svc-cols.open{max-height:800px;opacity:1;border-top:1px solid var(--line)}
+.svc-toggle{display:inline-flex;align-items:center;gap:8px;margin-top:1.5rem;font-family:var(--mono);font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--navy);background:var(--teal);border:none;padding:0.65rem 1.4rem;border-radius:3px;cursor:pointer;transition:background 0.2s;text-transform:uppercase}
+.svc-toggle:hover{background:var(--teal2)}
+.svc-toggle .arr{display:inline-block;transition:transform 0.3s;margin-left:2px}
+.svc-toggle.open .arr{transform:rotate(180deg)}
+.col{padding:2.5rem;border-right:1px solid var(--line)}
+.col:last-child{border-right:none}
+.col-lbl{font-family:var(--mono);font-size:0.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1.5rem;padding-bottom:0.8rem;border-bottom:1px solid var(--line)}
+.col ul{list-style:none}
+.col ul li{font-size:0.875rem;color:var(--muted);line-height:1.65;padding:0.6rem 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+.col ul li:last-child{border-bottom:none}
+.col ul li::before{content:'→';color:var(--teal);font-family:var(--mono);font-size:0.68rem;margin-top:3px;flex-shrink:0}
+.col ul li strong{color:var(--text);font-weight:500}
+
+/* STEPS */
+#proceso{background:var(--ink2)}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;gap:1px}
+.step{background:var(--panel);padding:2rem 1.5rem;position:relative;transition:background 0.3s}
+.step:hover{background:var(--ink3)}
+.step-n{font-family:var(--mono);font-size:0.6rem;color:var(--dim);letter-spacing:0.1em;margin-bottom:1rem}
+.step h4{font-size:0.95rem;font-weight:600;margin-bottom:0.5rem;font-style:normal;color:var(--navy)}
+.step p{font-size:0.82rem;color:var(--muted);line-height:1.7}
+.step-acc{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+.step:hover .step-acc{transform:scaleX(1)}
+
+/* WHY */
+#porque{background:var(--ink)}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.why-item{background:var(--panel);padding:2rem;transition:background 0.3s}
+.why-item:hover{background:var(--ink2)}
+.why-n{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--dim);margin-bottom:0.8rem}
+.why-item h4{font-size:1rem;font-weight:600;margin-bottom:0.5rem;font-style:normal;color:var(--navy)}
+.why-item p{font-size:0.85rem;color:var(--muted);line-height:1.75}
+
+/* CONTACT */
+#contacto{background:var(--ink2)}
+.c-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:6rem;align-items:start}
+.c-info .sec-desc{margin-bottom:2.5rem}
+.cd{display:flex;gap:14px;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid var(--line)}
+.cd:first-of-type{border-top:1px solid var(--line)}
+.ci{width:38px;height:38px;border:1px solid var(--line);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;background:var(--panel)}
+.cl{font-family:var(--mono);font-size:0.63rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px}
+.cv{font-size:0.9rem;color:var(--text)}
+form{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2.5rem;box-shadow:0 2px 20px rgba(15,36,68,0.06)}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fg{margin-bottom:1.3rem}
+label{display:block;font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.45rem}
+input,textarea,select{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:4px;color:var(--text);font-family:var(--body);font-size:0.9rem;padding:0.78rem 1rem;outline:none;transition:border-color 0.2s;-webkit-appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--teal)}
+input::placeholder,textarea::placeholder{color:var(--dim)}
+textarea{min-height:120px;resize:vertical;line-height:1.6}
+select option{background:var(--panel)}
+.btn-send{width:100%;margin-top:0.5rem;background:var(--teal);color:var(--navy);font-family:var(--mono);font-size:0.8rem;font-weight:700;letter-spacing:0.04em;padding:1rem;border:none;border-radius:4px;cursor:pointer;transition:background 0.2s,transform 0.15s}
+.btn-send:hover{background:var(--teal2);transform:translateY(-1px)}
+.f-note{font-family:var(--mono);font-size:0.63rem;color:var(--dim);text-align:center;margin-top:1rem;line-height:1.7}
+.form-ok{display:none;text-align:center;padding:3rem 1rem}
+.form-ok .oi{font-size:2.5rem;margin-bottom:1rem}
+.form-ok h3{font-size:1.1rem;font-weight:600;color:var(--teal);margin-bottom:0.5rem}
+.form-ok p{font-size:0.88rem;color:var(--muted)}
+
+/* FOOTER */
+footer{position:relative;z-index:1;background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:2.5rem 6%}
+.ft{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem}
+.fb{font-family:var(--mono);font-size:0.72rem;color:rgba(255,255,255,0.35);line-height:1.8}
+.fb em{color:var(--teal2);font-style:normal}
+.fn{display:flex;gap:2rem;list-style:none}
+.fn a{font-family:var(--mono);font-size:0.68rem;color:rgba(255,255,255,0.35);text-decoration:none;transition:color 0.2s}
+.fn a:hover{color:var(--teal2)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.65s ease,transform 0.65s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  #hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .steps{grid-template-columns:repeat(3,1fr)}
+  .svc-cols{grid-template-columns:1fr}
+  .col{border-right:none;border-bottom:1px solid var(--line)}
+  .col:last-child{border-bottom:none}
+}
+@media(max-width:900px){
+  nav ul{display:none}
+  .hamburger{display:flex}
+  .c-grid{grid-template-columns:1fr;gap:3rem}
+  .f-row{grid-template-columns:1fr}
+  .why-grid{grid-template-columns:1fr}
+  section{padding:5rem 5%}
+  .svc-head{grid-template-columns:1fr;padding:2rem}
+  .col{padding:1.5rem}
+}
+@media(max-width:640px){
+  .steps{grid-template-columns:1fr}
+  .strip{gap:1rem}
+  h1{font-size:2.4rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#hero" class="logo">[Tu<em>Empresa</em>]<em>_security</em></a>
+  <div class="nav-right">
+    <ul>
+      <li><a href="#servicios" data-i18n="nav_services">Servicios</a></li>
+      <li><a href="#proceso" data-i18n="nav_process">Proceso</a></li>
+      <li><a href="#porque" data-i18n="nav_why">Por qué nosotros</a></li>
+      <li><a href="#contacto" class="nav-cta" data-i18n="nav_contact">Contacto</a></li>
+    </ul>
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <div class="lang-sep"></div>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="hamburger" id="hb" aria-label="Menú"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="eyebrow"><span class="dot-p"></span><span data-i18n="hero_eyebrow">Ciberseguridad para empresas</span></div>
+    <h1>
+      <span data-i18n="hero_h1_l1">Seguridad ofensiva</span><br>
+      <span class="ac" data-i18n="hero_h1_l2">y gobierno del dato</span>
+      <span class="ln2" data-i18n="hero_h1_l3">para su empresa.</span>
+    </h1>
+    <p class="hero-sub" data-i18n="hero_sub">Identificamos vulnerabilidades reales en su infraestructura antes que los atacantes. Clasificamos, ciframos y protegemos su información sensible con Microsoft Purview. Dos proyectos especializados. Un interlocutor. Sin intermediarios.</p>
+    <div class="hero-ctas">
+      <a href="#contacto" class="btn-main" data-i18n="hero_cta1">Solicitar propuesta →</a>
+      <a href="#servicios" class="btn-ghost" data-i18n="hero_cta2">Ver proyectos</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-n">360<span>º</span></div><div class="stat-l" data-i18n="stat1">INFRAESTRUCTURA & DATO</div></div>
+      <div><div class="stat-n">24<span>h</span></div><div class="stat-l" data-i18n="stat2">respuesta inicial</div></div>
+      <div><div class="stat-n">NIS2<span>+</span></div><div class="stat-l">ISO 27001 · RGPD · ENS</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-glow"></div>
+    <div class="terminal">
+      <div class="t-bar"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span class="t-title">audit_scope.sh — Pentesting &amp; DLP</span></div>
+      <div class="t-body">
+        <div class="tl"><span class="tc">$ </span><span class="tm" data-i18n="term1"># Reconocimiento de superficie de ataque</span></div>
+        <div class="tl"><span class="tc">$ </span>nmap -sV --script vuln target.empresa.es</div>
+        <div class="tl"><span class="tok">✓ </span><span style="color:#c8d8e8" data-i18n="term2">PORT 443 — SSL/TLS activo</span></div>
+        <div class="tl"><span class="tw">! </span><span style="color:#c8d8e8">CVE-2024-xxxx — CVSS 9.8 <span data-i18n="term_crit">crítico</span></span></div>
+        <div class="tl"><span class="te">✗ </span><span style="color:#c8d8e8" data-i18n="term3">SQLi en /api/v2/search — confirmada</span></div>
+        <div class="tl"><span class="te">✗ </span><span style="color:#c8d8e8" data-i18n="term4">XSS almacenado — panel administración</span></div>
+        <div class="tl"><span class="tc">$ </span><span class="tm" data-i18n="term5"># Módulo DLP — Microsoft Purview</span></div>
+        <div class="tl"><span class="tc">$ </span>purview scan --policy dlp_corp_v2</div>
+        <div class="tl"><span class="tok">✓ </span><span style="color:#c8d8e8" data-i18n="term6">1.247 archivos clasificados</span></div>
+        <div class="tl"><span class="tw">! </span><span style="color:#c8d8e8" data-i18n="term7">34 documentos sin etiqueta sensibilidad</span></div>
+        <div class="tl"><span class="tw">! </span><span style="color:#c8d8e8" data-i18n="term8">Exfiltración detectada vía correo externo</span></div>
+        <div class="tl"><span class="tok">✓ </span><span style="color:#c8d8e8" data-i18n="term9">Políticas DLP aplicadas — Exchange + Teams</span></div>
+        <div class="tl"><span class="tc">$ </span><span class="tb">▌</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <span class="strip-lbl" data-i18n="strip_lbl">METODOLOGÍA & COMPLIANCE</span>
+  <div class="strip-tags">
+    <span class="strip-tag">ISO/IEC 27001</span>
+    <span class="strip-tag">RGPD</span>
+    <span class="strip-tag">NIS2</span>
+    <span class="strip-tag">ENS</span>
+    <span class="strip-tag">PCI-DSS</span>
+    <span class="strip-tag">DORA</span>
+    <span class="strip-tag">OWASP Top 10</span>
+    <span class="strip-tag">PTES</span>
+    <span class="strip-tag">Microsoft Purview</span>
+    <span class="strip-tag">MPIP</span>
+  </div>
+</div>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="sec-lbl reveal" data-i18n="svc_lbl">// Proyectos</div>
+  <h2 class="reveal" data-i18n="svc_h2">Un resultado: su empresa protegida.</h2>
+  <p class="sec-desc reveal" data-i18n="svc_desc">Evaluación exhaustiva de su postura de seguridad y control total sobre su información sensible. Proyectos orientados a resultados concretos, no a volumen de páginas en un informe.</p>
+
+  <!-- P01 -->
+  <div class="svc-block reveal">
+    <div class="svc-head">
+      <div>
+        <div class="svc-num">// Proyecto 01</div>
+        <h3><span data-i18n="p1_title">Auditoría de Seguridad y Pentesting</span><br><span style="color:var(--muted);font-weight:300;font-size:0.72em" data-i18n="p1_sub">(Infraestructura y Aplicaciones Web)</span></h3>
+        <p data-i18n="p1_desc">Proyecto orientado a la evaluación exhaustiva y proactiva de la postura de ciberseguridad, enfocado en la identificación, explotación controlada y remediación de vulnerabilidades. Abarca tanto el perímetro externo (aplicaciones web y servicios expuestos) como la red interna corporativa, simulando amenazas desde el exterior y posibles atacantes internos. Combina capacidades avanzadas de análisis de vulnerabilidades y pruebas de penetración apoyadas en metodologías estándar (OWASP y PTES). Define un plan de acción priorizado, alineando las soluciones con el negocio para maximizar la resiliencia frente a todo tipo de amenazas.</p>
+        <button class="svc-toggle" onclick="toggleSvc('p01',this)" data-i18n-open="toggle_open" data-i18n-close="toggle_close"><span class="lbl" data-i18n="toggle_open">Ver detalles del proyecto</span> <span class="arr">▼</span></button>
+      </div>
+      <div class="svc-badge">🔍 Pentesting</div>
+    </div>
+    <div class="svc-cols" id="p01">
+      <div class="col">
+        <div class="col-lbl" data-i18n="col_obj">Objetivos</div>
+        <ul><li><span data-i18n="p1_obj">Evaluar integralmente su ciberseguridad (interna y externa) para anticipar ataques, prevenir fugas de datos y bloquear accesos no autorizados. Garantiza el cumplimiento normativo (ISO 27001, RGPD, ENS) y valida la eficacia real de sus defensas y sistemas de monitorización (SOC/SIEM).</span></li></ul>
+      </div>
+      <div class="col">
+        <div class="col-lbl" data-i18n="col_scope">Capacidades / Alcance</div>
+        <ul><li><span data-i18n="p1_scope">Auditorías personalizadas (Caja Negra, Gris, Blanca) que incluyen pruebas de penetración web (OWASP), revisión de red interna y Directorio Activo. Abarca simulaciones de ataques avanzados, finalizando con informes técnico-ejecutivos, pruebas de concepto (PoC) y planes de remediación priorizados.</span></li></ul>
+      </div>
+      <div class="col">
+        <div class="col-lbl" data-i18n="col_ben">Beneficios</div>
+        <ul><li><span data-i18n="p1_ben">Reducción drástica del riesgo tecnológico mediante la eliminación de puntos ciegos. Asegura el cumplimiento regulatorio, protege la reputación de la marca, valida su inversión en seguridad y eleva la madurez de la organización hacia un modelo proactivo de defensa en profundidad.</span></li></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P02 -->
+  <div class="svc-block reveal">
+    <div class="svc-head">
+      <div>
+        <div class="svc-num">// Proyecto 02</div>
+        <h3><span data-i18n="p2_title">Clasificación, Cifrado y Prevención de Fugas de Información</span><br><span style="color:var(--muted);font-weight:300;font-size:0.72em" data-i18n="p2_sub">(Correo y Cloud — Microsoft Purview)</span></h3>
+        <p data-i18n="p2_desc">Proyecto orientado a la implantación de un modelo integral de clasificación, cifrado y prevención de fugas de información, enfocado en la protección del dato a lo largo de todo su ciclo de vida, tanto en entornos de correo electrónico como plataformas cloud. Combina capacidades avanzadas de etiquetado y protección de la información con <strong>Microsoft Purview Information Protection (MPIP)</strong> junto con mecanismos de monitorización y control de exfiltración mediante <strong>Microsoft Purview Data Loss Prevention (DLP)</strong>. Define un marco de gobierno del dato que alinea procesos, usuarios y herramientas para maximizar la visibilidad, el control y la resiliencia frente a amenazas internas y externas.</p>
+        <button class="svc-toggle" onclick="toggleSvc('p02',this)" data-i18n-open="toggle_open" data-i18n-close="toggle_close"><span class="lbl" data-i18n="toggle_open">Ver detalles del proyecto</span> <span class="arr">▼</span></button>
+      </div>
+      <div class="svc-badge">🛡 DLP · Purview</div>
+    </div>
+    <div class="svc-cols" id="p02">
+      <div class="col">
+        <div class="col-lbl" data-i18n="col_obj">Objetivos</div>
+        <ul><li><span data-i18n="p2_obj">Proteger la información confidencial durante todo su ciclo de vida mediante un modelo homogéneo de clasificación y cifrado. Prevenir exfiltraciones en correo y nube, garantizar el cumplimiento normativo (ISO 27001, RGPD) y dotar a la organización de un control y trazabilidad absolutos sobre el uso de sus datos.</span></li></ul>
+      </div>
+      <div class="col">
+        <div class="col-lbl" data-i18n="col_scope">Capacidades / Alcance</div>
+        <ul><li><span data-i18n="p2_scope">Diseño e implantación del modelo de clasificación y gobierno del dato. Incluye el despliegue de Microsoft Purview Information Protection (cifrado y etiquetado) y Data Loss Prevention (DLP) para monitorizar y bloquear fugas de información. Totalmente integrado con el ecosistema corporativo (Exchange, Teams, SharePoint, OneDrive).</span></li></ul>
+      </div>
+      <div class="col">
+        <div class="col-lbl" data-i18n="col_ben">Beneficios</div>
+        <ul><li><span data-i18n="p2_ben">Reduce radicalmente el riesgo de exposición de información sensible y posibles sanciones legales por incumplimiento normativo. Aporta visibilidad total sobre los datos, eleva la concienciación de los usuarios y establece una base sólida de madurez para escalar hacia capacidades avanzadas como eDiscovery y gestión de riesgos internos.</span></li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESO -->
+<section id="proceso">
+  <div class="sec-lbl reveal" data-i18n="proc_lbl">// Metodología</div>
+  <h2 class="reveal" data-i18n="proc_h2">Cómo trabajamos</h2>
+  <p class="sec-desc reveal" data-i18n="proc_desc">Un proceso estructurado y transparente. Sabe en todo momento en qué fase está su proyecto y qué esperar de cada entrega.</p>
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-n" data-i18n="step1_n">01 — Discovery</div>
+      <h4 data-i18n="step1_h">Reunión de alcance</h4>
+      <p data-i18n="step1_p">Definimos sistemas en scope, modelo de auditoría y objetivos específicos. Sin coste. Sin compromiso.</p>
+      <div class="step-acc"></div>
+    </div>
+    <div class="step">
+      <div class="step-n" data-i18n="step2_n">02 — Propuesta</div>
+      <h4 data-i18n="step2_h">Propuesta técnica</h4>
+      <p data-i18n="step2_p">Documento de alcance, metodología, entregables y precio cerrado. Sin letra pequeña ni sorpresas.</p>
+      <div class="step-acc"></div>
+    </div>
+    <div class="step">
+      <div class="step-n" data-i18n="step3_n">03 — Ejecución</div>
+      <h4 data-i18n="step3_h">Trabajo técnico</h4>
+      <p data-i18n="step3_p">Realizamos el proyecto con actualizaciones periódicas. Acceso directo al técnico responsable.</p>
+      <div class="step-acc"></div>
+    </div>
+    <div class="step">
+      <div class="step-n" data-i18n="step4_n">04 — Informe</div>
+      <h4 data-i18n="step4_h">Entrega de resultados</h4>
+      <p data-i18n="step4_p">Informe ejecutivo + técnico con hallazgos priorizados por severidad, evidencias (PoC) y plan de remediación accionable.</p>
+      <div class="step-acc"></div>
+    </div>
+    <div class="step">
+      <div class="step-n" data-i18n="step5_n">05 — Seguimiento</div>
+      <h4 data-i18n="step5_h">Soporte post-proyecto</h4>
+      <p data-i18n="step5_p">Disponibles para aclarar hallazgos y validar que las correcciones implementadas son efectivas.</p>
+      <div class="step-acc"></div>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUÉ -->
+<section id="porque">
+  <div class="sec-lbl reveal" data-i18n="why_lbl">// Por qué nosotros</div>
+  <h2 class="reveal" data-i18n="why_h2">Sin departamentos.<br>Sin intermediarios.<br>Solo resultados.</h2>
+  <p class="sec-desc reveal" data-i18n="why_desc">Como empresa especializada sin la estructura de una gran consultora, ofrecemos lo que las grandes no pueden: atención directa, agilidad real y precio justo.</p>
+  <div class="why-grid reveal">
+    <div class="why-item"><div class="why-n">01</div><h4 data-i18n="why1_h">Especialización total</h4><p data-i18n="why1_p">Solo hacemos pentesting y protección del dato. No somos un departamento IT generalista que "también hace ciberseguridad". Conocemos los detalles que marcan la diferencia.</p></div>
+    <div class="why-item"><div class="why-n">02</div><h4 data-i18n="why2_h">Interlocutor único</h4><p data-i18n="why2_p">Habla con quien ejecuta el trabajo. No hay cuentas de cliente ni cadenas de mando que distorsionen la información técnica o alarguen los plazos.</p></div>
+    <div class="why-item"><div class="why-n">03</div><h4 data-i18n="why3_h">Informes accionables</h4><p data-i18n="why3_p">Hallazgos priorizados por severidad, con PoC reproducibles y pasos de remediación específicos. No PDFs de 80 páginas sin conclusiones claras.</p></div>
+    <div class="why-item"><div class="why-n">04</div><h4 data-i18n="why4_h">Precio transparente</h4><p data-i18n="why4_p">Precio cerrado desde el inicio. Sin costes ocultos. Si hay cambios de alcance, se acuerdan y presupuestan antes de ejecutarse.</p></div>
+    <div class="why-item"><div class="why-n">05</div><h4 data-i18n="why5_h">Marco legal sólido</h4><p data-i18n="why5_p">Todos los proyectos se ejecutan bajo contrato de autorización expresa. Confidencialidad, RGPD y responsabilidad civil cubiertos desde el primer día.</p></div>
+    <div class="why-item"><div class="why-n">06</div><h4 data-i18n="why6_h">Visión de continuidad</h4><p data-i18n="why6_p">La ciberseguridad no es un proyecto de una sola vez. Ofrecemos relaciones de largo plazo con revisiones periódicas que evolucionan con su empresa.</p></div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="c-grid">
+    <div class="c-info">
+      <div class="sec-lbl reveal" data-i18n="ct_lbl">// Contacto</div>
+      <h2 class="reveal" data-i18n="ct_h2">Hablemos de su proyecto</h2>
+      <p class="sec-desc reveal" data-i18n="ct_desc">Cuéntenos qué necesita. En menos de 48 horas recibirá respuesta con orientación técnica inicial sin ningún compromiso.</p>
+      <div class="cd reveal"><div class="ci">📧</div><div><div class="cl" data-i18n="ct_email_lbl">Email</div><div class="cv">contacto@tuempresa.com</div></div></div>
+      <div class="cd reveal"><div class="ci">⏱</div><div><div class="cl" data-i18n="ct_resp_lbl">Respuesta</div><div class="cv" data-i18n="ct_resp_val">Menos de 24 horas laborables</div></div></div>
+      <div class="cd reveal"><div class="ci">🌍</div><div><div class="cl" data-i18n="ct_cov_lbl">Cobertura</div><div class="cv" data-i18n="ct_cov_val">Ámbito Internacional · 100% remoto</div></div></div>
+    </div>
+
+    <form id="cform" action="https://formspree.io/f/TU_ID_FORMSPREE" method="POST" class="reveal">
+      <div class="f-row">
+        <div class="fg"><label for="nombre" data-i18n="f_name">Nombre *</label><input type="text" id="nombre" name="nombre" data-i18n-placeholder="f_name_ph" placeholder="Su nombre" required></div>
+        <div class="fg"><label for="empresa" data-i18n="f_company">Empresa</label><input type="text" id="empresa" name="empresa" data-i18n-placeholder="f_company_ph" placeholder="Su empresa"></div>
+      </div>
+      <div class="fg"><label for="email" data-i18n="f_email">Email *</label><input type="email" id="email" name="email" placeholder="su@empresa.com" required></div>
+      <div class="fg">
+        <label for="proyecto" data-i18n="f_proj">Proyecto de interés *</label>
+        <select id="proyecto" name="proyecto" required>
+          <option value="" disabled selected data-i18n="f_proj_ph">Seleccione un proyecto</option>
+          <option value="pentesting" data-i18n="f_opt1">Auditoría de Seguridad y Pentesting</option>
+          <option value="dlp" data-i18n="f_opt2">Clasificación, Cifrado y DLP (Microsoft Purview)</option>
+          <option value="ambos" data-i18n="f_opt3">Ambos proyectos</option>
+          <option value="consulta" data-i18n="f_opt4">Consulta general</option>
+        </select>
+      </div>
+      <div class="fg"><label for="msg" data-i18n="f_msg">Describa su situación *</label><textarea id="msg" name="msg" data-i18n-placeholder="f_msg_ph" placeholder="¿Qué necesita proteger? ¿Cuántos usuarios o sistemas están en scope? ¿Tiene algún plazo o requerimiento normativo específico?" required></textarea></div>
+      <input type="hidden" name="_subject" value="Nueva consulta — TuEmpresa Security">
+      <input type="text" name="_gotcha" style="display:none">
+      <button type="submit" class="btn-send" data-i18n="f_submit">Enviar consulta →</button>
+      <p class="f-note" data-i18n="f_note">Datos tratados conforme al RGPD únicamente para responder su consulta. Sin spam. Sin cesiones a terceros.</p>
+    </form>
+    <div class="form-ok" id="formOk">
+      <div class="oi">✅</div>
+      <h3 data-i18n="form_ok_h">Mensaje recibido</h3>
+      <p data-i18n="form_ok_p">Le responderemos en menos de 24 horas laborables<br>con orientación técnica inicial.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft">
+    <div class="fb"><em>[TuEmpresa]_security</em><br><span data-i18n="footer_copy">© 2025 TuEmpresa Security. Todos los derechos reservados.</span><br>Pentesting · DLP Microsoft Purview</div>
+    <ul class="fn">
+      <li><a href="#servicios" data-i18n="nav_services">Servicios</a></li>
+      <li><a href="#proceso" data-i18n="nav_process">Proceso</a></li>
+      <li><a href="#contacto" data-i18n="nav_contact">Contacto</a></li>
+      <li><a href="#" data-i18n="footer_privacy">Política de privacidad</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+/* ── TOGGLE SERVICE DETAILS ── */
+function toggleSvc(id, btn) {
+  const cols = document.getElementById(id);
+  const isOpen = cols.classList.contains('open');
+  cols.classList.toggle('open');
+  btn.classList.toggle('open');
+  const lbl = btn.querySelector('.lbl');
+  const dict = T[currentLang];
+  lbl.textContent = isOpen ? dict.toggle_open : dict.toggle_close;
+}
+
+/* ── TRANSLATIONS ── */
+const T = {
+  es: {
+    nav_services: 'Servicios',
+    nav_process: 'Proceso',
+    nav_why: 'Por qué nosotros',
+    nav_contact: 'Contacto',
+    hero_eyebrow: 'Ciberseguridad para empresas',
+    hero_h1_l1: 'Seguridad ofensiva',
+    hero_h1_l2: 'y gobierno del dato',
+    hero_h1_l3: 'para su empresa.',
+    hero_sub: 'Identificamos vulnerabilidades reales en su infraestructura antes que los atacantes. Clasificamos, ciframos y protegemos su información sensible con Microsoft Purview. Dos proyectos especializados. Un interlocutor. Sin intermediarios.',
+    hero_cta1: 'Solicitar propuesta →',
+    hero_cta2: 'Ver proyectos',
+    stat1: 'INFRAESTRUCTURA & DATO',
+    stat2: 'respuesta inicial',
+    term1: '# Reconocimiento de superficie de ataque',
+    term2: 'PORT 443 — SSL/TLS activo',
+    term_crit: 'crítico',
+    term3: 'SQLi en /api/v2/search — confirmada',
+    term4: 'XSS almacenado — panel administración',
+    term5: '# Módulo DLP — Microsoft Purview',
+    term6: '1.247 archivos clasificados',
+    term7: '34 documentos sin etiqueta sensibilidad',
+    term8: 'Exfiltración detectada vía correo externo',
+    term9: 'Políticas DLP aplicadas — Exchange + Teams',
+    strip_lbl: 'METODOLOGÍA & COMPLIANCE',
+    svc_lbl: '// Proyectos',
+    svc_h2: 'Un resultado: su empresa protegida.',
+    svc_desc: 'Evaluación exhaustiva de su postura de seguridad y control total sobre su información sensible. Proyectos orientados a resultados concretos, no a volumen de páginas en un informe.',
+    p1_title: 'Auditoría de Seguridad y Pentesting',
+    p1_sub: '(Infraestructura y Aplicaciones Web)',
+    p1_desc: 'Proyecto orientado a la evaluación exhaustiva y proactiva de la postura de ciberseguridad, enfocado en la identificación, explotación controlada y remediación de vulnerabilidades. Abarca tanto el perímetro externo (aplicaciones web y servicios expuestos) como la red interna corporativa, simulando amenazas desde el exterior y posibles atacantes internos. Combina capacidades avanzadas de análisis de vulnerabilidades y pruebas de penetración apoyadas en metodologías estándar (OWASP y PTES). Define un plan de acción priorizado, alineando las soluciones con el negocio para maximizar la resiliencia frente a todo tipo de amenazas.',
+    col_obj: 'Objetivos',
+    col_scope: 'Capacidades / Alcance',
+    col_ben: 'Beneficios',
+    p1_obj: 'Evaluar integralmente su ciberseguridad (interna y externa) para anticipar ataques, prevenir fugas de datos y bloquear accesos no autorizados. Garantiza el cumplimiento normativo (ISO 27001, RGPD, ENS) y valida la eficacia real de sus defensas y sistemas de monitorización (SOC/SIEM).',
+    p1_scope: 'Auditorías personalizadas (Caja Negra, Gris, Blanca) que incluyen pruebas de penetración web (OWASP), revisión de red interna y Directorio Activo. Abarca simulaciones de ataques avanzados, finalizando con informes técnico-ejecutivos, pruebas de concepto (PoC) y planes de remediación priorizados.',
+    p1_ben: 'Reducción drástica del riesgo tecnológico mediante la eliminación de puntos ciegos. Asegura el cumplimiento regulatorio, protege la reputación de la marca, valida su inversión en seguridad y eleva la madurez de la organización hacia un modelo proactivo de defensa en profundidad.',
+    p2_title: 'Clasificación, Cifrado y Prevención de Fugas de Información',
+    p2_sub: '(Correo y Cloud — Microsoft Purview)',
+    p2_desc: 'Proyecto orientado a la implantación de un modelo integral de clasificación, cifrado y prevención de fugas de información, enfocado en la protección del dato a lo largo de todo su ciclo de vida, tanto en entornos de correo electrónico como plataformas cloud. Combina capacidades avanzadas de etiquetado y protección de la información con Microsoft Purview Information Protection (MPIP) junto con mecanismos de monitorización y control de exfiltración mediante Microsoft Purview Data Loss Prevention (DLP). Define un marco de gobierno del dato que alinea procesos, usuarios y herramientas para maximizar la visibilidad, el control y la resiliencia frente a amenazas internas y externas.',
+    p2_obj: 'Proteger la información confidencial durante todo su ciclo de vida mediante un modelo homogéneo de clasificación y cifrado. Prevenir exfiltraciones en correo y nube, garantizar el cumplimiento normativo (ISO 27001, RGPD) y dotar a la organización de un control y trazabilidad absolutos sobre el uso de sus datos.',
+    p2_scope: 'Diseño e implantación del modelo de clasificación y gobierno del dato. Incluye el despliegue de Microsoft Purview Information Protection (cifrado y etiquetado) y Data Loss Prevention (DLP) para monitorizar y bloquear fugas de información. Totalmente integrado con el ecosistema corporativo (Exchange, Teams, SharePoint, OneDrive).',
+    p2_ben: 'Reduce radicalmente el riesgo de exposición de información sensible y posibles sanciones legales por incumplimiento normativo. Aporta visibilidad total sobre los datos, eleva la concienciación de los usuarios y establece una base sólida de madurez para escalar hacia capacidades avanzadas como eDiscovery y gestión de riesgos internos.',
+    proc_lbl: '// Metodología',
+    proc_h2: 'Cómo trabajamos',
+    proc_desc: 'Un proceso estructurado y transparente. Sabe en todo momento en qué fase está su proyecto y qué esperar de cada entrega.',
+    step1_n: '01 — Discovery',
+    step1_h: 'Reunión de alcance',
+    step1_p: 'Definimos sistemas en scope, modelo de auditoría y objetivos específicos. Sin coste. Sin compromiso.',
+    step2_n: '02 — Propuesta',
+    step2_h: 'Propuesta técnica',
+    step2_p: 'Documento de alcance, metodología, entregables y precio cerrado. Sin letra pequeña ni sorpresas.',
+    step3_n: '03 — Ejecución',
+    step3_h: 'Trabajo técnico',
+    step3_p: 'Realizamos el proyecto con actualizaciones periódicas. Acceso directo al técnico responsable.',
+    step4_n: '04 — Informe',
+    step4_h: 'Entrega de resultados',
+    step4_p: 'Informe ejecutivo + técnico con hallazgos priorizados por severidad, evidencias (PoC) y plan de remediación accionable.',
+    step5_n: '05 — Seguimiento',
+    step5_h: 'Soporte post-proyecto',
+    step5_p: 'Disponibles para aclarar hallazgos y validar que las correcciones implementadas son efectivas.',
+    why_lbl: '// Por qué nosotros',
+    why_h2: 'Sin departamentos.<br>Sin intermediarios.<br>Solo resultados.',
+    why_desc: 'Como empresa especializada sin la estructura de una gran consultora, ofrecemos lo que las grandes no pueden: atención directa, agilidad real y precio justo.',
+    why1_h: 'Especialización total',
+    why1_p: 'Solo hacemos pentesting y protección del dato. No somos un departamento IT generalista que "también hace ciberseguridad". Conocemos los detalles que marcan la diferencia.',
+    why2_h: 'Interlocutor único',
+    why2_p: 'Habla con quien ejecuta el trabajo. No hay cuentas de cliente ni cadenas de mando que distorsionen la información técnica o alarguen los plazos.',
+    why3_h: 'Informes accionables',
+    why3_p: 'Hallazgos priorizados por severidad, con PoC reproducibles y pasos de remediación específicos. No PDFs de 80 páginas sin conclusiones claras.',
+    why4_h: 'Precio transparente',
+    why4_p: 'Precio cerrado desde el inicio. Sin costes ocultos. Si hay cambios de alcance, se acuerdan y presupuestan antes de ejecutarse.',
+    why5_h: 'Marco legal sólido',
+    why5_p: 'Todos los proyectos se ejecutan bajo contrato de autorización expresa. Confidencialidad, RGPD y responsabilidad civil cubiertos desde el primer día.',
+    why6_h: 'Visión de continuidad',
+    why6_p: 'La ciberseguridad no es un proyecto de una sola vez. Ofrecemos relaciones de largo plazo con revisiones periódicas que evolucionan con su empresa.',
+    ct_lbl: '// Contacto',
+    ct_h2: 'Hablemos de su proyecto',
+    ct_desc: 'Cuéntenos qué necesita. En menos de 48 horas recibirá respuesta con orientación técnica inicial sin ningún compromiso.',
+    ct_email_lbl: 'Email',
+    ct_resp_lbl: 'Respuesta',
+    ct_resp_val: 'Menos de 24 horas laborables',
+    ct_cov_lbl: 'Cobertura',
+    ct_cov_val: 'Ámbito Internacional · 100% remoto',
+    f_name: 'Nombre *',
+    f_name_ph: 'Su nombre',
+    f_company: 'Empresa',
+    f_company_ph: 'Su empresa',
+    f_email: 'Email *',
+    f_proj: 'Proyecto de interés *',
+    f_proj_ph: 'Seleccione un proyecto',
+    f_opt1: 'Auditoría de Seguridad y Pentesting',
+    f_opt2: 'Clasificación, Cifrado y DLP (Microsoft Purview)',
+    f_opt3: 'Ambos proyectos',
+    f_opt4: 'Consulta general',
+    f_msg: 'Describa su situación *',
+    f_msg_ph: '¿Qué necesita proteger? ¿Cuántos usuarios o sistemas están en scope? ¿Tiene algún plazo o requerimiento normativo específico?',
+    f_submit: 'Enviar consulta →',
+    f_note: 'Datos tratados conforme al RGPD únicamente para responder su consulta. Sin spam. Sin cesiones a terceros.',
+    form_ok_h: 'Mensaje recibido',
+    form_ok_p: 'Le responderemos en menos de 24 horas laborables<br>con orientación técnica inicial.',
+    footer_copy: '© 2025 TuEmpresa Security. Todos los derechos reservados.',
+    footer_privacy: 'Política de privacidad',
+    toggle_open: 'Ver detalles del proyecto',
+    toggle_close: 'Ocultar detalles',
+  },
+  en: {
+    nav_services: 'Services',
+    nav_process: 'Process',
+    nav_why: 'Why Us',
+    nav_contact: 'Contact',
+    hero_eyebrow: 'Cybersecurity for businesses',
+    hero_h1_l1: 'Offensive security',
+    hero_h1_l2: 'and data governance',
+    hero_h1_l3: 'for your business.',
+    hero_sub: 'We identify real vulnerabilities in your infrastructure before attackers do. We classify, encrypt and protect your sensitive information with Microsoft Purview. Two specialized projects. One point of contact. No middlemen.',
+    hero_cta1: 'Request a proposal →',
+    hero_cta2: 'View services',
+    stat1: 'INFRASTRUCTURE & DATA',
+    stat2: 'initial response',
+    term1: '# Attack surface reconnaissance',
+    term2: 'PORT 443 — SSL/TLS active',
+    term_crit: 'critical',
+    term3: 'SQLi at /api/v2/search — confirmed',
+    term4: 'Stored XSS — admin panel',
+    term5: '# DLP Module — Microsoft Purview',
+    term6: '1,247 files classified',
+    term7: '34 documents missing sensitivity label',
+    term8: 'Exfiltration detected via external email',
+    term9: 'DLP policies applied — Exchange + Teams',
+    strip_lbl: 'METHODOLOGY & COMPLIANCE',
+    svc_lbl: '// Projects',
+    svc_h2: 'One outcome: your business protected.',
+    svc_desc: 'Comprehensive assessment of your security posture and full control over your sensitive data. Projects focused on concrete results, not page count in a report.',
+    p1_title: 'Security Audit & Pentesting',
+    p1_sub: '(Infrastructure and Web Applications)',
+    p1_desc: 'A project aimed at an exhaustive and proactive assessment of the cybersecurity posture, focused on identifying, controlled exploitation and remediation of vulnerabilities. Covers both the external perimeter (web applications and exposed services) and the internal corporate network, simulating external threats and potential insider attackers. Combines advanced vulnerability analysis and penetration testing capabilities supported by standard methodologies (OWASP and PTES). Defines a prioritized action plan, aligning solutions with business objectives to maximize resilience against all types of threats.',
+    col_obj: 'Objectives',
+    col_scope: 'Capabilities / Scope',
+    col_ben: 'Benefits',
+    p1_obj: 'Comprehensively assess your cybersecurity posture (internal and external) to anticipate attacks, prevent data leaks and block unauthorized access. Ensures regulatory compliance (ISO 27001, GDPR, ENS) and validates the real effectiveness of your defenses and monitoring systems (SOC/SIEM).',
+    p1_scope: 'Customized audits (Black Box, Grey Box, White Box) including web penetration testing (OWASP), internal network and Active Directory review. Covers advanced attack simulations, delivering technical and executive reports, proof-of-concept (PoC) evidence and prioritized remediation plans.',
+    p1_ben: 'Drastic reduction of technology risk by eliminating blind spots. Ensures regulatory compliance, protects brand reputation, validates your security investment and elevates organizational maturity toward a proactive defense-in-depth model.',
+    p2_title: 'Data Classification, Encryption & DLP',
+    p2_sub: '(Email & Cloud — Microsoft Purview)',
+    p2_desc: 'A project aimed at implementing a comprehensive model for data classification, encryption and information leakage prevention, focused on protecting data throughout its entire lifecycle in both email and cloud environments. Combines advanced information labeling and protection capabilities with Microsoft Purview Information Protection (MPIP) together with exfiltration monitoring and control mechanisms via Microsoft Purview Data Loss Prevention (DLP). Defines a data governance framework that aligns processes, users and tools to maximize visibility, control and resilience against internal and external threats.',
+    p2_obj: 'Protect confidential information throughout its entire lifecycle through a consistent model of classification and encryption. Prevent exfiltration via email and cloud, ensure regulatory compliance (ISO 27001, GDPR) and provide the organization with absolute control and traceability over data usage.',
+    p2_scope: 'Design and deployment of the data classification and governance model. Includes rollout of Microsoft Purview Information Protection (encryption and labeling) and Data Loss Prevention (DLP) to monitor and block information leaks. Fully integrated with the corporate ecosystem (Exchange, Teams, SharePoint, OneDrive).',
+    p2_ben: 'Radically reduces the risk of sensitive data exposure and potential legal penalties for non-compliance. Provides full visibility over data, raises user awareness and establishes a solid maturity foundation to scale toward advanced capabilities such as eDiscovery and Insider Risk Management.',
+    proc_lbl: '// Methodology',
+    proc_h2: 'How we work',
+    proc_desc: 'A structured and transparent process. You always know which phase your project is in and what to expect from each deliverable.',
+    step1_n: '01 — Discovery',
+    step1_h: 'Scoping meeting',
+    step1_p: 'We define in-scope systems, audit model and specific objectives. No cost. No commitment.',
+    step2_n: '02 — Proposal',
+    step2_h: 'Technical proposal',
+    step2_p: 'Scope document, methodology, deliverables and fixed price. No fine print, no surprises.',
+    step3_n: '03 — Execution',
+    step3_h: 'Technical work',
+    step3_p: 'We carry out the project with regular updates. Direct access to the responsible engineer.',
+    step4_n: '04 — Report',
+    step4_h: 'Results delivery',
+    step4_p: 'Executive + technical report with severity-prioritized findings, PoC evidence and an actionable remediation plan.',
+    step5_n: '05 — Follow-up',
+    step5_h: 'Post-project support',
+    step5_p: 'Available to clarify findings and verify that implemented fixes are effective.',
+    why_lbl: '// Why us',
+    why_h2: 'No departments.<br>No middlemen.<br>Just results.',
+    why_desc: 'As a specialized firm without the overhead of a large consultancy, we offer what the big players cannot: direct attention, real agility and fair pricing.',
+    why1_h: 'Full specialization',
+    why1_p: 'We only do pentesting and data protection. We are not a generalist IT department that "also does cybersecurity." We know the details that make the difference.',
+    why2_h: 'Single point of contact',
+    why2_p: 'You talk to the person doing the work. No account managers or chains of command distorting technical information or stretching deadlines.',
+    why3_h: 'Actionable reports',
+    why3_p: 'Findings prioritized by severity, with reproducible PoC and specific remediation steps. Not 80-page PDFs with no clear conclusions.',
+    why4_h: 'Transparent pricing',
+    why4_p: 'Fixed price from day one. No hidden costs. Scope changes are agreed and quoted before execution.',
+    why5_h: 'Solid legal framework',
+    why5_p: 'All projects are executed under an express authorization agreement. Confidentiality, GDPR and professional liability covered from day one.',
+    why6_h: 'Continuity mindset',
+    why6_p: 'Cybersecurity is not a one-time project. We offer long-term relationships with periodic reviews that evolve alongside your business.',
+    ct_lbl: '// Contact',
+    ct_h2: "Let's talk about your project",
+    ct_desc: 'Tell us what you need. Within 48 hours you will receive a response with initial technical guidance, with no commitment.',
+    ct_email_lbl: 'Email',
+    ct_resp_lbl: 'Response',
+    ct_resp_val: 'Less than 24 business hours',
+    ct_cov_lbl: 'Coverage',
+    ct_cov_val: 'International · 100% remote',
+    f_name: 'Name *',
+    f_name_ph: 'Your name',
+    f_company: 'Company',
+    f_company_ph: 'Your company',
+    f_email: 'Email *',
+    f_proj: 'Project of interest *',
+    f_proj_ph: 'Select a project',
+    f_opt1: 'Security Audit & Pentesting',
+    f_opt2: 'Data Classification, Encryption & DLP (Microsoft Purview)',
+    f_opt3: 'Both projects',
+    f_opt4: 'General inquiry',
+    f_msg: 'Describe your situation *',
+    f_msg_ph: 'What do you need to protect? How many users or systems are in scope? Do you have a specific deadline or regulatory requirement?',
+    f_submit: 'Send inquiry →',
+    f_note: 'Data processed under GDPR solely to respond to your inquiry. No spam. No data sharing.',
+    form_ok_h: 'Message received',
+    form_ok_p: 'We will respond within 24 business hours<br>with initial technical guidance.',
+    footer_copy: '© 2025 TuEmpresa Security. All rights reserved.',
+    footer_privacy: 'Privacy policy',
+    toggle_open: 'View project details',
+    toggle_close: 'Hide details',
+  }
+};
+
+let currentLang = 'es';
+
+function setLang(lang) {
+  currentLang = lang;
+  const dict = T[lang];
+
+  /* text nodes */
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.innerHTML = dict[key];
+  });
+
+  /* placeholders */
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (dict[key] !== undefined) el.placeholder = dict[key];
+  });
+
+  /* button states */
+  document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+  /* html lang attr */
+  document.documentElement.lang = lang === 'es' ? 'es' : 'en';
+}
+
+/* ── REVEAL ── */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) { setTimeout(() => e.target.classList.add('in'), i * 70); io.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ── HAMBURGER ── */
+document.getElementById('hb').addEventListener('click', function() {
+  const ul = document.querySelector('nav ul');
+  const open = ul.style.display === 'flex';
+  Object.assign(ul.style, { display: open ? 'none' : 'flex', flexDirection: 'column', position: 'fixed', top: '60px', left: '0', right: '0', background: 'rgba(245,247,250,0.98)', padding: '1.5rem 6%', gap: '1.2rem', borderBottom: '1px solid rgba(15,36,68,0.1)', zIndex: '199' });
+});
+
+/* ── FORM ── */
+const form = document.getElementById('cform');
+const ok = document.getElementById('formOk');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = form.querySelector('.btn-send');
+  btn.textContent = currentLang === 'es' ? 'Enviando…' : 'Sending…';
+  btn.disabled = true;
+  try {
+    const r = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+    if (r.ok) { form.style.display = 'none'; ok.style.display = 'block'; }
+    else { btn.textContent = currentLang === 'es' ? 'Error al enviar. Inténtelo de nuevo.' : 'Send error. Please try again.'; btn.disabled = false; }
+  } catch { btn.textContent = currentLang === 'es' ? 'Error de conexión.' : 'Connection error.'; btn.disabled = false; }
+});
+</script>
+</body>
+</html>
