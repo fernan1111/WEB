@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TuEmpresa Security</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&amp;family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white: #ffffff;
+      --offwhite: #F5F5F7;
+      --charcoal: #1D1D1F;
+      --mid: #6e6e73;
+      --accent: oklch(0.55 0.20 250);
+      --accent-light: oklch(0.92 0.06 250);
+      --accent-glow: oklch(0.70 0.18 250 / 0.25);
+      --radius: 20px;
+      --nav-h: 64px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--charcoal);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .nav-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+      color: var(--charcoal);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px; font-weight: 400; color: var(--mid);
+      text-decoration: none; letter-spacing: 0.01em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--charcoal); }
+
+    .nav-cta {
+      font-size: 13px; font-weight: 500;
+      color: var(--accent); border: 1.5px solid var(--accent);
+      padding: 8px 20px; border-radius: 40px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); color: #fff; }
+
+    /* ─── SHARED ─── */
+    .section-label {
+      display: inline-block;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.8s cubic-bezier(.16,1,.3,1), transform 0.8s cubic-bezier(.16,1,.3,1);
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .fade-up.delay-1 { transition-delay: 0.1s; }
+    .fade-up.delay-2 { transition-delay: 0.22s; }
+    .fade-up.delay-3 { transition-delay: 0.34s; }
+    .fade-up.delay-4 { transition-delay: 0.46s; }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: calc(var(--nav-h) + 80px) 48px 80px;
+      background: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 10%, oklch(0.90 0.08 250 / 0.18), transparent 70%),
+        radial-gradient(ellipse 40% 30% at 80% 80%, oklch(0.88 0.06 200 / 0.10), transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.20em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 28px;
+    }
+
+    .hero-headline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(56px, 7vw, 96px);
+      font-weight: 300;
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+      color: var(--charcoal);
+      max-width: 820px;
+      margin-bottom: 28px;
+    }
+    .hero-headline strong { font-weight: 600; }
+
+    .hero-sub {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 300;
+      color: var(--mid);
+      letter-spacing: -0.01em;
+      margin-bottom: 44px;
+      max-width: 420px;
+    }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 15px; font-weight: 500;
+      color: #fff;
+      background: var(--charcoal);
+      padding: 14px 32px; border-radius: 40px;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      letter-spacing: -0.01em;
+    }
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: scale(1.03);
+      box-shadow: 0 8px 32px var(--accent-glow);
+    }
+    .btn-primary svg { transition: transform 0.2s; }
+    .btn-primary:hover svg { transform: translateX(3px); }
+
+    /* ─── HERO VISUAL ─── */
+    .hero-visual {
+      margin-top: 72px;
+      width: 100%;
+      max-width: 680px;
+      position: relative;
+    }
+
+    .shield-stage {
+      width: 480px; height: 480px;
+      margin: 0 auto;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Outer orbit rings */
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid transparent;
+    }
+    .ring-1 {
+      width: 420px; height: 420px;
+      border-color: oklch(0.75 0.14 250 / 0.18);
+      animation: spin 28s linear infinite;
+    }
+    .ring-2 {
+      width: 320px; height: 320px;
+      border-color: oklch(0.75 0.14 250 / 0.28);
+      animation: spin 18s linear infinite reverse;
+    }
+    .ring-3 {
+      width: 220px; height: 220px;
+      border-color: oklch(0.75 0.14 250 / 0.40);
+      animation: spin 12s linear infinite;
+    }
+
+    /* Dots on ring */
+    .ring::before, .ring::after {
+      content: '';
+      position: absolute;
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      top: -3px; left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .ring::after { top: auto; bottom: -3px; background: oklch(0.70 0.15 200); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Shield shape */
+    .shield-wrap {
+      position: relative; z-index: 2;
+      width: 160px; height: 180px;
+      filter: drop-shadow(0 20px 60px oklch(0.55 0.20 250 / 0.30));
+    }
+
+    .shield-svg {
+      width: 100%; height: 100%;
+      animation: shield-pulse 4s ease-in-out infinite;
+    }
+    @keyframes shield-pulse {
+      0%, 100% { filter: drop-shadow(0 0 0px oklch(0.55 0.20 250 / 0)); }
+      50% { filter: drop-shadow(0 0 40px oklch(0.55 0.20 250 / 0.35)); }
+    }
+
+    /* Floating data nodes */
+    .data-node {
+      position: absolute;
+      background: var(--white);
+      border: 1px solid oklch(0.80 0.12 250 / 0.4);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 10px; font-weight: 500;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      white-space: nowrap;
+    }
+    .data-node .dot {
+      display: inline-block; width: 6px; height: 6px;
+      background: var(--accent); border-radius: 50;
+      margin-right: 6px; vertical-align: middle;
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .node-a { top: 60px; right: 10px; animation: float-a 6s ease-in-out infinite; }
+    .node-b { bottom: 80px; left: 20px; animation: float-b 7s ease-in-out infinite; }
+    .node-c { top: 120px; left: 0; animation: float-c 8s ease-in-out infinite; }
+
+    @keyframes float-a { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    @keyframes float-b { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+    @keyframes float-c { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+    .data-node .val {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--charcoal); letter-spacing: -0.02em; margin-top: 2px;
+    }
+
+    /* ─── SERVICES ─── */
+    .service-section {
+      padding: 140px 0;
+    }
+    .service-section.alt { background: var(--offwhite); }
+
+    .service-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 80px;
+      padding: 0 80px;
+    }
+    .service-inner.mirror { direction: rtl; }
+    .service-inner.mirror > * { direction: ltr; }
+
+    .service-text {}
+    .service-title {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 300;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--charcoal);
+      margin-bottom: 24px;
+    }
+    .service-title strong { font-weight: 600; }
+
+    .service-desc {
+      font-size: 17px; font-weight: 300; line-height: 1.65;
+      color: var(--mid); max-width: 380px;
+    }
+
+    .service-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 32px;
+      font-size: 15px; font-weight: 500; color: var(--accent);
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+    .service-link:hover { gap: 12px; }
+
+    /* ─── PEN TEST VISUAL ─── */
+    .pentest-visual {
+      width: 100%; aspect-ratio: 1;
+      max-width: 460px;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .network-canvas {
+      width: 100%; height: 100%;
+      border-radius: 28px;
+      background: linear-gradient(145deg, #f0f4ff 0%, #e8eeff 50%, #f5f0ff 100%);
+      position: relative; overflow: hidden;
+    }
+
+    .network-canvas svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* ─── PURVIEW VISUAL ─── */
+    .purview-visual {
+      width: 100%; aspect-ratio: 1;
+      max-width: 460px;
+      position: relative;
+    }
+
+    .purview-canvas {
+      width: 100%; height: 100%;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #f5f0ff 0%, #ece8ff 50%, #f0f4ff 100%);
+      position: relative; overflow: hidden;
+    }
+
+    .stream-line {
+      position: absolute;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, oklch(0.55 0.20 270 / 0.5), transparent);
+      animation: stream 3s ease-in-out infinite;
+      border-radius: 2px;
+    }
+    @keyframes stream {
+      0% { opacity: 0; transform: translateX(-30px); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(30px); }
+    }
+
+    /* ─── FEATURES ─── */
+    #features {
+      padding: 140px 0;
+      background: var(--white);
+    }
+
+    .features-header {
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 80px;
+      padding: 0 48px;
+    }
+
+    .features-title {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 300; letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--charcoal);
+    }
+    .features-title strong { font-weight: 600; }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 80px;
+    }
+
+    .feature-card {
+      background: var(--offwhite);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      transition: transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s;
+      cursor: default;
+    }
+    .feature-card:hover {
+      transform: scale(1.025) translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+
+    .feature-icon {
+      width: 52px; height: 52px;
+      margin-bottom: 28px;
+      background: var(--white);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .feature-name {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 22px; font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--charcoal);
+      margin-bottom: 12px;
+    }
+
+    .feature-desc {
+      font-size: 15px; font-weight: 300; line-height: 1.6;
+      color: var(--mid);
+    }
+
+    /* ─── CONTACT ─── */
+    #contact {
+      background: var(--offwhite);
+      padding: 160px 48px;
+      text-align: center;
+    }
+
+    .contact-headline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(52px, 8vw, 112px);
+      font-weight: 300;
+      letter-spacing: -0.045em;
+      line-height: 1.0;
+      color: var(--charcoal);
+      margin-bottom: 20px;
+    }
+    .contact-headline strong { font-weight: 600; }
+
+    .contact-sub {
+      font-size: 17px; font-weight: 300;
+      color: var(--mid); margin-bottom: 52px;
+    }
+
+    .contact-form {
+      display: flex; gap: 12px;
+      max-width: 500px; margin: 0 auto;
+      justify-content: center;
+    }
+
+    .contact-input {
+      flex: 1;
+      height: 52px; padding: 0 22px;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      border-radius: 40px;
+      background: var(--white);
+      font-size: 15px; font-family: 'Inter', sans-serif;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .contact-input::placeholder { color: #aaa; }
+    .contact-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    .btn-send {
+      height: 52px; padding: 0 28px;
+      border-radius: 40px; border: none;
+      background: var(--charcoal); color: #fff;
+      font-size: 15px; font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      white-space: nowrap;
+    }
+    .btn-send:hover { background: var(--accent); transform: scale(1.03); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 32px 48px;
+      background: var(--white);
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .footer-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600; font-size: 14px;
+      color: var(--charcoal); text-decoration: none;
+    }
+    .footer-logo span { color: var(--accent); }
+
+    .footer-copy {
+      font-size: 12px; color: #aaa; font-weight: 300;
+    }
+
+    /* ─── TWEAKS ─── */
+    .tweaks-panel {
+      display: none;
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: white;
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 16px;
+      padding: 24px;
+      width: 260px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+      font-family: 'Inter', sans-serif;
+    }
+    .tweaks-panel.open { display: block; }
+    .tweaks-title {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--charcoal);
+      margin-bottom: 20px;
+    }
+    .tweak-row { margin-bottom: 16px; }
+    .tweak-label { font-size: 11px; color: var(--mid); margin-bottom: 6px; display: block; }
+    .tweak-select {
+      width: 100%; padding: 8px 12px; border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.12);
+      font-size: 13px; font-family: 'Inter', sans-serif;
+      color: var(--charcoal); background: var(--offwhite);
+      outline: none; cursor: pointer;
+    }
+    .tweak-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; color: var(--mid); line-height: 1;
+    }
+
+    /* responsive */
+    @media (max-width: 900px) {
+      .service-inner { grid-template-columns: 1fr; gap: 48px; padding: 0 32px; }
+      .service-inner.mirror { direction: ltr; }
+      .features-grid { grid-template-columns: 1fr; padding: 0 32px; }
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .hero-visual { max-width: 100%; }
+      .shield-stage { width: 340px; height: 340px; }
+      .ring-1 { width: 310px; height: 310px; }
+      .ring-2 { width: 240px; height: 240px; }
+      .ring-3 { width: 170px; height: 170px; }
+    }
+  </style>
+<script type='text/javascript' nonce='TlN9BZiNylbPVP1114Eoeg==' src='https://claude.ai/rebNA-uLuNxRflNVrcVSf_UemxW9TOOfHSQZincrh0bNRqB1rXZwio2TrIE-QQn-g3ngGrX-u4Le3HJkhB8loc6Z6MmKhU4rz0FT4GFKzs97Brr1FlEbsNWIWT1BAAtDtzPU-C3rT31pNIPH5w1y8WApaqqsVynVN9UTJRP2XeutYyL_ksO_NYV2UPqSgI8a4mx5U9_t01h5FS928TqeEqdwEfOpS68Bb5pX5LgowzNS6vO8tSprH9zVuX_Qmx5OV8L-GENpqkIwKEVuNg969fmKtL5aD9XijWBrP85OKSD3wjm-NmmHSayuPlNFUlkimURL5F5-BWZfJq5rgIAoNdfN8Frq-nsjRB8pxWZmyBssy5iI5zxSO9JocMcRsnZOL8TbJYaYZspVU9NKSKQg50mOUW9DD0EwksGWiKSROUMfk1p_Kqm1b-c7-VXWGssb6kIp98ytaBRHOr361eHovEJ52TvoUjSI2m1m2Mw09PCd-woyQCoRPeA9YeDay-E8qXo519GmbAFWWMCflV5JjUVCS8uvP823g7zadJ0AHWaPy5U'></script></head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">TuEmpresa <span>Security</span></a>
+    <ul class="nav-links">
+      <li><a href="#pentest">Penetration Testing</a></li>
+      <li><a href="#purview">Purview DLP</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="nav-cta" href="#contact">Get started</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <p class="hero-eyebrow fade-up">Enterprise Cybersecurity</p>
+
+    <h1 class="hero-headline fade-up delay-1">
+      Security without <strong>compromise.</strong>
+    </h1>
+
+    <p class="hero-sub fade-up delay-2">
+      Protect what matters most.
+    </p>
+
+    <a class="btn-primary fade-up delay-3" href="#contact">
+      Start a conversation
+      <svg width="14" height="14" viewbox="0 0 14 14" fill="none">
+        <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    <!-- HERO VISUAL -->
+    <div class="hero-visual fade-up delay-4">
+      <div class="shield-stage">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+
+        <!-- Shield SVG -->
+        <div class="shield-wrap">
+          <svg class="shield-svg" viewbox="0 0 160 185" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <lineargradient id="shieldGrad" x1="0" y1="0" x2="160" y2="185" gradientunits="userSpaceOnUse">
+                <stop offset="0%" stop-color="oklch(0.55 0.20 250)"/>
+                <stop offset="100%" stop-color="oklch(0.45 0.22 270)"/>
+              </linearGradient>
+              <lineargradient id="shieldHighlight" x1="40" y1="20" x2="120" y2="90" gradientunits="userSpaceOnUse">
+                <stop offset="0%" stop-color="white" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="white" stop-opacity="0"/>
+              </linearGradient>
+              <filter id="glow">
+                <fegaussianblur stddeviation="4" result="blur"/>
+                <femerge><femergenode in="blur"/><femergenode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- Main shield body -->
+            <path d="M80 4 L148 32 L148 96 C148 138 80 182 80 182 C80 182 12 138 12 96 L12 32 Z" fill="url(#shieldGrad)"/>
+            <!-- Highlight overlay -->
+            <path d="M80 4 L148 32 L148 96 C148 138 80 182 80 182 C80 182 12 138 12 96 L12 32 Z" fill="url(#shieldHighlight)"/>
+            <!-- Inner shield stroke -->
+            <path d="M80 22 L132 44 L132 94 C132 126 80 162 80 162 C80 162 28 126 28 94 L28 44 Z" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
+            <!-- Check mark -->
+            <path d="M52 92 L70 110 L108 72" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+          </svg>
+        </div>
+
+        <!-- Floating nodes -->
+        <div class="data-node node-a">
+          <span><span class="dot"></span>Threats blocked</span>
+          <span class="val">1,284</span>
+        </div>
+        <div class="data-node node-b">
+          <span><span class="dot" style="background:oklch(0.6 0.18 140)"></span>DLP policies</span>
+          <span class="val">Active</span>
+        </div>
+        <div class="data-node node-c">
+          <span><span class="dot" style="background:oklch(0.6 0.15 300)"></span>Pen tests</span>
+          <span class="val">24 done</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE 01: PENETRATION TESTING -->
+  <section class="service-section alt" id="pentest">
+    <div class="service-inner">
+      <!-- Visual -->
+      <div class="pentest-visual fade-up">
+        <div class="network-canvas">
+          <svg viewbox="0 0 460 460" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialgradient id="nodeGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="oklch(0.55 0.20 250)"/>
+                <stop offset="100%" stop-color="oklch(0.45 0.22 270)"/>
+              </radialGradient>
+              <filter id="nodeGlow">
+                <fegaussianblur stddeviation="3" result="blur"/>
+                <femerge><femergenode in="blur"/><femergenode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <!-- Connection lines -->
+            <g stroke="oklch(0.55 0.20 250 / 0.20)" stroke-width="1.2" fill="none">
+              <line x1="230" y1="230" x2="120" y2="130"/>
+              <line x1="230" y1="230" x2="340" y2="130"/>
+              <line x1="230" y1="230" x2="110" y2="330"/>
+              <line x1="230" y1="230" x2="350" y2="310"/>
+              <line x1="230" y1="230" x2="230" y2="100"/>
+              <line x1="120" y1="130" x2="80" y2="200"/>
+              <line x1="340" y1="130" x2="400" y2="210"/>
+              <line x1="110" y1="330" x2="80" y2="390"/>
+              <line x1="350" y1="310" x2="400" y2="380"/>
+            </g>
+
+            <!-- Animated scan lines -->
+            <line x1="230" y1="230" x2="120" y2="130" stroke="oklch(0.55 0.20 250)" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6">
+              <animate attributename="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatcount="indefinite"/>
+            </line>
+            <line x1="230" y1="230" x2="350" y2="310" stroke="oklch(0.6 0.18 300)" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.5">
+              <animate attributename="stroke-dashoffset" from="0" to="-20" dur="1.8s" repeatcount="indefinite"/>
+            </line>
+
+            <!-- Secondary nodes -->
+            <circle cx="120" cy="130" r="8" fill="oklch(0.55 0.20 250 / 0.5)" filter="url(#nodeGlow)"/>
+            <circle cx="340" cy="130" r="8" fill="oklch(0.55 0.20 250 / 0.5)" filter="url(#nodeGlow)"/>
+            <circle cx="110" cy="330" r="8" fill="oklch(0.55 0.20 250 / 0.5)" filter="url(#nodeGlow)"/>
+            <circle cx="350" cy="310" r="8" fill="oklch(0.55 0.20 250 / 0.5)" filter="url(#nodeGlow)"/>
+            <circle cx="230" cy="100" r="6" fill="oklch(0.60 0.18 200 / 0.6)"/>
+            <circle cx="80" cy="200" r="5" fill="oklch(0.60 0.18 200 / 0.5)"/>
+            <circle cx="400" cy="210" r="5" fill="oklch(0.60 0.18 200 / 0.5)"/>
+            <circle cx="80" cy="390" r="5" fill="oklch(0.60 0.18 200 / 0.4)"/>
+            <circle cx="400" cy="380" r="5" fill="oklch(0.60 0.18 200 / 0.4)"/>
+
+            <!-- Central node -->
+            <circle cx="230" cy="230" r="30" fill="url(#nodeGrad)" filter="url(#nodeGlow)" opacity="0.9">
+              <animate attributename="r" values="28;32;28" dur="3s" repeatcount="indefinite"/>
+            </circle>
+            <circle cx="230" cy="230" r="20" fill="white" opacity="0.2"/>
+
+            <!-- Crosshair on center -->
+            <line x1="216" y1="230" x2="244" y2="230" stroke="white" stroke-width="1.5" opacity="0.8"/>
+            <line x1="230" y1="216" x2="230" y2="244" stroke="white" stroke-width="1.5" opacity="0.8"/>
+            <circle cx="230" cy="230" r="7" fill="none" stroke="white" stroke-width="1.5" opacity="0.9"/>
+
+            <!-- Status badge -->
+            <rect x="148" y="370" width="164" height="36" rx="10" fill="white" opacity="0.85"/>
+            <circle cx="168" cy="388" r="5" fill="oklch(0.60 0.20 140)"/>
+            <text x="180" y="393" font-family="Inter,sans-serif" font-size="11" fill="#1D1D1F" font-weight="500">Scan in progress</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Text -->
+      <div class="service-text fade-up delay-1">
+        <span class="section-label">Service 01</span>
+        <h2 class="service-title">
+          Find the <strong>breach</strong><br/>before they do.
+        </h2>
+        <p class="service-desc">
+          Real-world attack simulation against your infrastructure. We think like the adversary — so you can close gaps before they become incidents.
+        </p>
+        <a class="service-link" href="#contact">
+          Request a test
+          <svg width="14" height="14" viewbox="0 0 14 14" fill="none">
+            <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE 02: PURVIEW DLP -->
+  <section class="service-section" id="purview">
+    <div class="service-inner mirror">
+      <!-- Text -->
+      <div class="service-text fade-up">
+        <span class="section-label">Service 02</span>
+        <h2 class="service-title">
+          Data stays <strong>yours.</strong><br/>Always.
+        </h2>
+        <p class="service-desc">
+          Microsoft Purview DLP, deployed and tuned for your organization. Policy, classification, enforcement — from day one to always.
+        </p>
+        <a class="service-link" href="#contact">
+          Explore DLP
+          <svg width="14" height="14" viewbox="0 0 14 14" fill="none">
+            <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Visual -->
+      <div class="purview-visual fade-up delay-1">
+        <div class="purview-canvas" style="height:460px; position:relative;">
+          <svg viewbox="0 0 460 460" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;">
+            <defs>
+              <lineargradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="transparent"/>
+                <stop offset="30%" stop-color="oklch(0.55 0.20 270 / 0.5)"/>
+                <stop offset="70%" stop-color="oklch(0.55 0.20 270 / 0.5)"/>
+                <stop offset="100%" stop-color="transparent"/>
+              </linearGradient>
+              <lineargradient id="blockGrad" x1="0" y1="0" x2="0" y2="1" gradientunits="objectBoundingBox">
+                <stop offset="0%" stop-color="oklch(0.55 0.20 270)"/>
+                <stop offset="100%" stop-color="oklch(0.45 0.22 290)"/>
+              </linearGradient>
+              <filter id="softGlow">
+                <fegaussianblur stddeviation="6" result="blur"/>
+                <femerge><femergenode in="blur"/><femergenode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <!-- Background grid subtle -->
+            <g stroke="oklch(0.55 0.20 270 / 0.07)" stroke-width="1">
+              <line x1="0" y1="115" x2="460" y2="115"/>
+              <line x1="0" y1="230" x2="460" y2="230"/>
+              <line x1="0" y1="345" x2="460" y2="345"/>
+              <line x1="115" y1="0" x2="115" y2="460"/>
+              <line x1="230" y1="0" x2="230" y2="460"/>
+              <line x1="345" y1="0" x2="345" y2="460"/>
+            </g>
+
+            <!-- Data stream lines - horizontal flowing -->
+            <rect x="40" y="130" width="380" height="2" rx="1" fill="url(#flowGrad)" opacity="0.8">
+              <animatetransform attributename="transform" type="translate" from="-40 0" to="40 0" dur="2.5s" repeatcount="indefinite"/>
+            </rect>
+            <rect x="40" y="175" width="380" height="1.5" rx="1" fill="url(#flowGrad)" opacity="0.5">
+              <animatetransform attributename="transform" type="translate" from="-40 0" to="40 0" dur="3.2s" repeatcount="indefinite"/>
+            </rect>
+            <rect x="40" y="230" width="380" height="2" rx="1" fill="url(#flowGrad)" opacity="0.9">
+              <animatetransform attributename="transform" type="translate" from="40 0" to="-40 0" dur="2s" repeatcount="indefinite"/>
+            </rect>
+            <rect x="40" y="280" width="380" height="1.5" rx="1" fill="url(#flowGrad)" opacity="0.5">
+              <animatetransform attributename="transform" type="translate" from="40 0" to="-40 0" dur="3.8s" repeatcount="indefinite"/>
+            </rect>
+            <rect x="40" y="325" width="380" height="2" rx="1" fill="url(#flowGrad)" opacity="0.7">
+              <animatetransform attributename="transform" type="translate" from="-40 0" to="40 0" dur="2.8s" repeatcount="indefinite"/>
+            </rect>
+
+            <!-- Central DLP shield/lock -->
+            <rect x="175" y="165" width="110" height="130" rx="18" fill="url(#blockGrad)" filter="url(#softGlow)" opacity="0.92"/>
+            <rect x="185" y="175" width="90" height="110" rx="12" fill="white" opacity="0.12"/>
+            <!-- Lock shackle -->
+            <path d="M205 185 Q230 158 255 185" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+            <!-- Lock body icon lines -->
+            <rect x="196" y="200" width="68" height="50" rx="10" fill="white" opacity="0.2"/>
+            <circle cx="230" cy="222" r="9" fill="white" opacity="0.85"/>
+            <rect x="226" y="228" width="8" height="12" rx="4" fill="white" opacity="0.85"/>
+
+            <!-- Classification labels -->
+            <rect x="44" y="50" width="110" height="34" rx="8" fill="white" opacity="0.85"/>
+            <circle cx="62" cy="67" r="5" fill="oklch(0.60 0.20 140)"/>
+            <text x="74" y="71" font-family="Inter,sans-serif" font-size="10" fill="#1D1D1F" font-weight="500">Classified: Low</text>
+
+            <rect x="174" y="50" width="112" height="34" rx="8" fill="white" opacity="0.85"/>
+            <circle cx="192" cy="67" r="5" fill="oklch(0.70 0.22 55)"/>
+            <text x="204" y="71" font-family="Inter,sans-serif" font-size="10" fill="#1D1D1F" font-weight="500">Classified: Med</text>
+
+            <rect x="305" y="50" width="112" height="34" rx="8" fill="white" opacity="0.85"/>
+            <circle cx="323" cy="67" r="5" fill="oklch(0.60 0.22 20)"/>
+            <text x="335" y="71" font-family="Inter,sans-serif" font-size="10" fill="#1D1D1F" font-weight="500">Classified: High</text>
+
+            <!-- Blocked badge -->
+            <rect x="150" y="376" width="160" height="36" rx="10" fill="white" opacity="0.85"/>
+            <circle cx="170" cy="394" r="5" fill="oklch(0.60 0.22 20)"/>
+            <text x="183" y="399" font-family="Inter,sans-serif" font-size="11" fill="#1D1D1F" font-weight="500">Transfer blocked</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="features-header">
+      <span class="section-label fade-up">Why us</span>
+      <h2 class="features-title fade-up delay-1">Built for <strong>modern threats.</strong></h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewbox="0 0 24 24" fill="none">
+            <path d="M12 2 L20 6 L20 13 C20 17.4 16.4 21.3 12 22 C7.6 21.3 4 17.4 4 13 L4 6 Z" stroke="oklch(0.55 0.20 250)" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M9 12 L11 14 L15 10" stroke="oklch(0.55 0.20 250)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="feature-name">Zero trust.</div>
+        <p class="feature-desc">Every access verified, every session monitored. Trust is earned, not assumed.</p>
+      </div>
+
+      <div class="feature-card fade-up delay-1">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewbox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3" stroke="oklch(0.55 0.20 250)" stroke-width="1.5"/>
+            <path d="M12 2 L12 5 M12 19 L12 22 M2 12 L5 12 M19 12 L22 12" stroke="oklch(0.55 0.20 250)" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M5.6 5.6 L7.8 7.8 M16.2 16.2 L18.4 18.4 M18.4 5.6 L16.2 7.8 M7.8 16.2 L5.6 18.4" stroke="oklch(0.55 0.20 250)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="feature-name">Full clarity.</div>
+        <p class="feature-desc">Every engagement ends with a report your board and your team can act on immediately.</p>
+      </div>
+
+      <div class="feature-card fade-up delay-2">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewbox="0 0 24 24" fill="none">
+            <path d="M13 2 L4 14 L11 14 L11 22 L20 10 L13 10 Z" stroke="oklch(0.55 0.20 250)" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="feature-name">Fast response.</div>
+        <p class="feature-desc">From detection to remediation plan in under 24 hours. Speed is a security property.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <span class="section-label fade-up">Contact</span>
+    <h2 class="contact-headline fade-up delay-1">Let's <strong>talk.</strong></h2>
+    <p class="contact-sub fade-up delay-2">No commitment. Just a conversation.</p>
+    <div class="contact-form fade-up delay-3">
+      <input class="contact-input" type="email" placeholder="your@email.com"/>
+      <button class="btn-send">Get in touch</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a class="footer-logo" href="#">TuEmpresa <span>Security</span></a>
+    <span class="footer-copy">© 2026 TuEmpresa Security. All rights reserved.</span>
+  </footer>
+
+  <!-- TWEAKS PANEL -->
+  <div class="tweaks-panel" id="tweaksPanel">
+    <button class="tweak-close" id="tweaksClose">×</button>
+    <div class="tweaks-title">Tweaks</div>
+    <div class="tweak-row">
+      <label class="tweak-label">Accent color</label>
+      <select class="tweak-select" id="accentSelect">
+        <option value="oklch(0.55 0.20 250)">Electric blue (default)</option>
+        <option value="oklch(0.52 0.20 270)">Deep violet</option>
+        <option value="oklch(0.50 0.20 160)">Emerald green</option>
+        <option value="oklch(0.55 0.22 30)">Burnt orange</option>
+      </select>
+    </div>
+    <div class="tweak-row">
+      <label class="tweak-label">Background tone</label>
+      <select class="tweak-select" id="bgSelect">
+        <option value="#F5F5F7">Apple grey (default)</option>
+        <option value="#F0F4FF">Cool blue tint</option>
+        <option value="#F5F5F0">Warm cream</option>
+        <option value="#F5F5F5">Pure neutral</option>
+      </select>
+    </div>
+    <div class="tweak-row">
+      <label class="tweak-label">Hero headline size</label>
+      <select class="tweak-select" id="headlineSelect">
+        <option value="clamp(56px,7vw,96px)">Default (96px)</option>
+        <option value="clamp(72px,9vw,120px)">Larger (120px)</option>
+        <option value="clamp(44px,5vw,72px)">Smaller (72px)</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    // Scroll fade-in
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Tweaks protocol
+    window.addEventListener('message', e => {
+      if (e.data?.type === '__activate_edit_mode') {
+        document.getElementById('tweaksPanel').classList.add('open');
+      }
+      if (e.data?.type === '__deactivate_edit_mode') {
+        document.getElementById('tweaksPanel').classList.remove('open');
+      }
+    });
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+    document.getElementById('tweaksClose').addEventListener('click', () => {
+      document.getElementById('tweaksPanel').classList.remove('open');
+      window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+    });
+
+    // Accent color tweak
+    document.getElementById('accentSelect').addEventListener('change', function() {
+      document.documentElement.style.setProperty('--accent', this.value);
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { accent: this.value } }, '*');
+    });
+
+    // Background tone tweak
+    document.getElementById('bgSelect').addEventListener('change', function() {
+      document.documentElement.style.setProperty('--offwhite', this.value);
+    });
+
+    // Headline size tweak
+    document.getElementById('headlineSelect').addEventListener('change', function() {
+      document.querySelector('.hero-headline').style.fontSize = this.value;
+    });
+  </script>
+</body>
+</html>
