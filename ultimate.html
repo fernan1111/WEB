@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TuEmpresa Security</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,600;9..40,700&amp;family=JetBrains+Mono:wght@300;400&amp;display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── VARIABLES ── */
+:root {
+  --bg:          #F7F7FC;
+  --bg2:         #FFFFFF;
+  --surface:     rgba(0,0,0,0.03);
+  --border:      rgba(0,0,0,0.07);
+  --border2:     rgba(0,0,0,0.12);
+  --accent:      oklch(0.52 0.22 250);
+  --accent-lt:   oklch(0.94 0.05 250);
+  --accent-glow: oklch(0.52 0.22 250 / 0.16);
+  --purple:      oklch(0.55 0.22 285);
+  --text:        #16162A;
+  --muted:       rgba(22,22,42,0.45);
+  --nav-bg:      rgba(247,247,252,0.88);
+  --shadow:      rgba(0,0,0,0.07);
+  --card-bg:     #FFFFFF;
+  --feat-bg:     #FFFFFF;
+  --nav-h:       66px;
+  --r:           20px;
+  --transition:  background-color .4s, color .35s, border-color .35s, box-shadow .35s;
+}
+[data-theme="dark"] {
+  --bg:          #06060E;
+  --bg2:         #0D0D1A;
+  --surface:     rgba(255,255,255,0.04);
+  --border:      rgba(255,255,255,0.08);
+  --border2:     rgba(255,255,255,0.16);
+  --accent:      oklch(0.78 0.22 195);
+  --accent-lt:   oklch(0.78 0.22 195 / 0.14);
+  --accent-glow: oklch(0.78 0.22 195 / 0.28);
+  --purple:      oklch(0.68 0.26 290);
+  --text:        #F0F0FF;
+  --muted:       rgba(240,240,255,0.45);
+  --nav-bg:      rgba(6,6,14,0.78);
+  --shadow:      rgba(0,0,0,0.35);
+  --card-bg:     rgba(255,255,255,0.05);
+  --feat-bg:     rgba(255,255,255,0.04);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  cursor: none;
+  transition: var(--transition);
+}
+
+/* ── CURSOR ── */
+#cursor {
+  position: fixed; pointer-events: none; z-index: 9999;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent);
+  transform: translate(-50%,-50%);
+  transition: width .25s, height .25s, opacity .25s, background .4s;
+  box-shadow: 0 0 14px var(--accent-glow);
+}
+#cursor.big { width: 36px; height: 36px; opacity: .35; }
+#cursor-trail {
+  position: fixed; pointer-events: none; z-index: 9998;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  opacity: .35;
+  transform: translate(-50%,-50%);
+  transition: left .13s ease-out, top .13s ease-out, border-color .4s;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: var(--nav-bg);
+  backdrop-filter: saturate(180%) blur(22px);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.nav-logo {
+  font-weight: 600; font-size: 17px; letter-spacing: -0.02em;
+  color: var(--text); text-decoration: none; transition: color .35s;
+}
+.nav-logo span { color: var(--accent); transition: color .4s; }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 14px; font-weight: 400; color: var(--muted);
+  text-decoration: none; transition: color .2s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-cta {
+  font-size: 13px; font-weight: 500; color: var(--accent);
+  border: 1.5px solid var(--accent);
+  padding: 8px 20px; border-radius: 40px; text-decoration: none;
+  transition: background .2s, box-shadow .2s;
+  opacity: .85;
+}
+.nav-cta:hover { background: var(--accent-lt); box-shadow: 0 0 18px var(--accent-glow); opacity: 1; }
+
+/* Theme + Lang buttons */
+.icon-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 10px;
+  border: 1.5px solid var(--border2);
+  background: var(--surface);
+  color: var(--text);
+  cursor: none; transition: var(--transition), transform .15s;
+  flex-shrink: 0;
+}
+.icon-btn:hover { background: var(--accent-lt); border-color: var(--accent); transform: scale(1.05); }
+.icon-btn svg { transition: transform .3s; }
+#themeBtn:hover svg { transform: rotate(20deg); }
+#langBtn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 400; letter-spacing: .06em;
+  width: 42px;
+}
+
+/* ── HERO ── */
+#hero {
+  position: relative; min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: calc(var(--nav-h) + 64px) 48px 80px;
+  overflow: hidden; text-align: center;
+}
+#hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.hero-content { position: relative; z-index: 1; }
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 300; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--accent); opacity: .8;
+  margin-bottom: 24px; display: inline-block; transition: color .4s;
+}
+.mono::before { content: '// '; }
+
+.hero-h {
+  font-size: clamp(58px, 8vw, 108px);
+  font-weight: 200; line-height: 1.0; letter-spacing: -0.045em;
+  color: var(--text); max-width: 860px; margin-bottom: 24px;
+  transition: color .35s;
+}
+.hero-h strong {
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+  font-size: 18px; font-weight: 300; color: var(--muted);
+  max-width: 380px; margin: 0 auto 48px; line-height: 1.65;
+  transition: color .35s;
+}
+.hero-btns { display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 500;
+  background: var(--accent); color: #fff;
+  padding: 14px 30px; border-radius: 40px;
+  text-decoration: none; border: none; cursor: none;
+  transition: transform .2s, box-shadow .3s, background .4s;
+  font-family: 'DM Sans', sans-serif;
+}
+[data-theme="dark"] .btn-primary { color: #000; }
+.btn-primary:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 8px 40px var(--accent-glow); }
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 400; color: var(--muted);
+  padding: 14px 26px; border-radius: 40px;
+  border: 1.5px solid var(--border2);
+  text-decoration: none; cursor: none;
+  transition: color .2s, border-color .2s; font-family: 'DM Sans', sans-serif;
+}
+.btn-outline:hover { color: var(--text); border-color: var(--accent); }
+
+.scroll-hint {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: var(--muted); letter-spacing: .14em; text-transform: uppercase;
+  animation: hint 2.5s ease-in-out infinite;
+}
+.scroll-hint svg { animation: bounce .85s ease-in-out infinite alternate; }
+@keyframes bounce { to { transform: translateY(5px); } }
+@keyframes hint { 0%,100%{opacity:.3} 50%{opacity:.7} }
+
+/* ── STATS ── */
+.stats {
+  background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 32px 80px; display: flex; justify-content: space-around; align-items: center;
+  gap: 40px; flex-wrap: wrap; transition: var(--transition);
+}
+.stat-num {
+  font-size: 36px; font-weight: 200; letter-spacing: -0.04em;
+  color: var(--text); line-height: 1; transition: color .35s;
+}
+.stat-num strong { font-weight: 700; color: var(--accent); transition: color .4s; }
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); margin-top: 6px; transition: color .35s;
+}
+.stat-div { width: 1px; height: 40px; background: var(--border); transition: background .35s; }
+
+/* ── SECTIONS ── */
+.section { padding: 130px 0; transition: var(--transition); }
+.section-inner { max-width: 1200px; margin: 0 auto; padding: 0 80px; }
+.split { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 80px; }
+.split.flip { direction: rtl; }
+.split.flip > * { direction: ltr; }
+.split-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 20px; opacity: .8; transition: color .4s;
+}
+.split-label::before { content: '// '; }
+.split-h {
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 200; line-height: 1.06; letter-spacing: -0.035em;
+  color: var(--text); margin-bottom: 20px; transition: color .35s;
+}
+.split-h strong { font-weight: 700; }
+.split-desc { font-size: 17px; font-weight: 300; line-height: 1.7; color: var(--muted); max-width: 380px; transition: color .35s; }
+.split-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 30px; font-size: 14px; font-weight: 500; color: var(--accent);
+  text-decoration: none; font-family: 'JetBrains Mono', monospace; letter-spacing: .04em;
+  transition: gap .2s, color .4s;
+}
+.split-link:hover { gap: 14px; }
+.pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 26px; }
+.pill {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em;
+  padding: 6px 14px; border: 1px solid var(--border2); border-radius: 20px;
+  color: var(--muted); cursor: default;
+  transition: var(--transition);
+}
+.pill:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+
+/* ── VISUAL BOXES ── */
+.visual-box {
+  width: 100%; aspect-ratio: 1; max-width: 480px;
+  border-radius: 28px; background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 40px var(--shadow);
+  position: relative; overflow: hidden;
+  transition: var(--transition);
+}
+#net-canvas { width: 100%; height: 100%; display: block; cursor: none; }
+
+/* ── DLP ── */
+.dlp-box { width: 100%; aspect-ratio: 1; max-width: 480px; position: relative; }
+.dlp-stage {
+  width: 100%; height: 100%; border-radius: 28px;
+  background: var(--card-bg); border: 1px solid var(--border);
+  box-shadow: 0 4px 40px var(--shadow);
+  overflow: hidden; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.dlp-hint {
+  position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: var(--muted); letter-spacing: .1em; text-transform: uppercase;
+  opacity: .5; white-space: nowrap;
+}
+#dlp-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.dlp-card {
+  position: absolute; width: 175px;
+  background: var(--card-bg);
+  border: 1px solid var(--border); border-radius: 16px; padding: 16px 18px;
+  cursor: grab; user-select: none;
+  box-shadow: 0 2px 16px var(--shadow);
+  transition: box-shadow .2s, border-color .2s, transform .15s, background .4s;
+  will-change: transform; z-index: 1;
+}
+.dlp-card:hover { border-color: var(--border2); box-shadow: 0 8px 32px var(--shadow); }
+.dlp-card:active { cursor: grabbing; }
+.dlp-card.dragging { box-shadow: 0 20px 60px var(--shadow); border-color: var(--accent); z-index: 10; transform: scale(1.03) rotate(1deg); }
+.dlp-card-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.dlp-card-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+.dlp-card-meta { font-size: 11px; font-weight: 300; color: var(--muted); }
+.dlp-card-tag { display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; font-family: 'JetBrains Mono', monospace; letter-spacing: .05em; }
+.tag-block { background: oklch(0.95 0.05 20); color: oklch(0.50 0.20 20); }
+.tag-ok    { background: oklch(0.95 0.05 145); color: oklch(0.45 0.18 145); }
+.tag-warn  { background: oklch(0.96 0.06 65);  color: oklch(0.50 0.18 55); }
+[data-theme="dark"] .tag-block { background: oklch(0.25 0.10 20); color: oklch(0.75 0.20 20); }
+[data-theme="dark"] .tag-ok    { background: oklch(0.22 0.08 145); color: oklch(0.72 0.18 145); }
+[data-theme="dark"] .tag-warn  { background: oklch(0.24 0.09 55);  color: oklch(0.80 0.18 55); }
+
+/* ── FEATURES ── */
+.feat-header { text-align: center; max-width: 520px; margin: 0 auto 64px; padding: 0 48px; }
+.feat-h { font-size: clamp(34px,4vw,52px); font-weight: 200; letter-spacing: -.035em; line-height: 1.1; color: var(--text); transition: color .35s; }
+.feat-h strong { font-weight: 700; }
+.feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; max-width: 1200px; margin: 0 auto; padding: 0 80px; }
+.feat-card {
+  background: var(--feat-bg); border: 1px solid var(--border); border-radius: 24px;
+  padding: 0; position: relative; overflow: hidden;
+  transition: border-color .3s, transform .3s, box-shadow .3s, background .4s;
+  cursor: default;
+}
+.feat-card:hover { transform: translateY(-7px); box-shadow: 0 24px 64px var(--shadow); }
+.feat-card:nth-child(1):hover { border-color: oklch(0.52 0.22 250 / 0.55); }
+.feat-card:nth-child(2):hover { border-color: oklch(0.55 0.22 285 / 0.55); }
+.feat-card:nth-child(3):hover { border-color: oklch(0.65 0.22 340 / 0.55); }
+.feat-visual {
+  width: 100%; height: 185px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.feat-card:nth-child(1) .feat-visual { background: linear-gradient(135deg, oklch(0.92 0.06 250), oklch(0.95 0.04 270)); }
+.feat-card:nth-child(2) .feat-visual { background: linear-gradient(135deg, oklch(0.92 0.06 285), oklch(0.95 0.04 310)); }
+.feat-card:nth-child(3) .feat-visual { background: linear-gradient(135deg, oklch(0.94 0.06 340), oklch(0.96 0.04 20)); }
+[data-theme="dark"] .feat-card:nth-child(1) .feat-visual { background: linear-gradient(135deg, oklch(0.20 0.10 250), oklch(0.16 0.08 270)); }
+[data-theme="dark"] .feat-card:nth-child(2) .feat-visual { background: linear-gradient(135deg, oklch(0.18 0.10 285), oklch(0.16 0.08 310)); }
+[data-theme="dark"] .feat-card:nth-child(3) .feat-visual { background: linear-gradient(135deg, oklch(0.20 0.10 340), oklch(0.18 0.08 20)); }
+.feat-body { padding: 26px 30px 34px; }
+.feat-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  margin-bottom: 12px; padding: 5px 12px; border-radius: 20px;
+}
+.feat-card:nth-child(1) .feat-tag { background: oklch(0.52 0.22 250 / 0.10); color: oklch(0.42 0.22 250); }
+.feat-card:nth-child(2) .feat-tag { background: oklch(0.55 0.22 285 / 0.10); color: oklch(0.42 0.22 285); }
+.feat-card:nth-child(3) .feat-tag { background: oklch(0.65 0.22 340 / 0.10); color: oklch(0.45 0.22 340); }
+[data-theme="dark"] .feat-card:nth-child(1) .feat-tag { background: oklch(0.52 0.22 250 / 0.20); color: oklch(0.78 0.20 250); }
+[data-theme="dark"] .feat-card:nth-child(2) .feat-tag { background: oklch(0.55 0.22 285 / 0.20); color: oklch(0.75 0.20 285); }
+[data-theme="dark"] .feat-card:nth-child(3) .feat-tag { background: oklch(0.65 0.22 340 / 0.20); color: oklch(0.82 0.20 340); }
+.feat-tag-dot { width: 6px; height: 6px; border-radius: 50%; animation: feat-blink 2s ease-in-out infinite; }
+.feat-card:nth-child(1) .feat-tag-dot { background: oklch(0.52 0.22 250); }
+.feat-card:nth-child(2) .feat-tag-dot { background: oklch(0.55 0.22 285); }
+.feat-card:nth-child(3) .feat-tag-dot { background: oklch(0.65 0.22 340); }
+@keyframes feat-blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.feat-num { display: none; }
+.feat-name { font-size: 21px; font-weight: 600; letter-spacing: -.02em; margin-bottom: 10px; color: var(--text); transition: color .35s; }
+.feat-desc { font-size: 14px; font-weight: 300; line-height: 1.65; color: var(--muted); transition: color .35s; }
+.feat-stat { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; align-items: baseline; gap: 8px; }
+.feat-stat-num { font-size: 28px; font-weight: 200; letter-spacing: -.04em; color: var(--text); transition: color .35s; }
+.feat-stat-num strong { font-weight: 700; }
+.feat-stat-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.feat-ring { transform-origin: center; animation: feat-spin 14s linear infinite; }
+.feat-ring2 { transform-origin: center; animation: feat-spin 9s linear infinite reverse; }
+@keyframes feat-spin { to { transform: rotate(360deg); } }
+.feat-pulse { animation: feat-pulse-anim 3s ease-in-out infinite; }
+@keyframes feat-pulse-anim { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.1)} }
+.feat-bar { transform-origin: bottom; animation: feat-bar-grow 1.8s cubic-bezier(.16,1,.3,1) forwards; }
+.feat-bar:nth-child(1){animation-delay:.05s} .feat-bar:nth-child(2){animation-delay:.15s}
+.feat-bar:nth-child(3){animation-delay:.28s} .feat-bar:nth-child(4){animation-delay:.40s}
+.feat-bar:nth-child(5){animation-delay:.52s}
+@keyframes feat-bar-grow { from{transform:scaleY(0)} to{transform:scaleY(1)} }
+.feat-bolt { animation: feat-bolt-anim 1.8s ease-in-out infinite; }
+@keyframes feat-bolt-anim { 0%,100%{opacity:.55} 50%{opacity:1;filter:drop-shadow(0 0 10px currentColor)} }
+
+/* ── CONTACT ── */
+#contact {
+  padding: 160px 48px; text-align: center;
+  background: var(--bg2); border-top: 1px solid var(--border);
+  position: relative; overflow: hidden; transition: var(--transition);
+}
+#contact::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.contact-h { font-size: clamp(60px,10vw,120px); font-weight: 200; letter-spacing: -.05em; line-height: 1.0; color: var(--text); margin-bottom: 16px; position: relative; z-index: 1; transition: color .35s; }
+.contact-h strong { font-weight: 700; background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.contact-sub { font-size: 17px; font-weight: 300; color: var(--muted); margin-bottom: 48px; position: relative; z-index: 1; transition: color .35s; }
+.contact-row { display: flex; gap: 10px; max-width: 460px; margin: 0 auto; position: relative; z-index: 1; }
+.contact-input {
+  flex: 1; height: 52px; padding: 0 22px;
+  border: 1.5px solid var(--border2); border-radius: 40px;
+  background: var(--bg); font-size: 15px; font-family: 'DM Sans', sans-serif;
+  color: var(--text); outline: none;
+  transition: border-color .2s, box-shadow .2s, background .4s, color .35s;
+}
+.contact-input::placeholder { color: var(--muted); }
+.contact-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); }
+.btn-send {
+  height: 52px; padding: 0 28px; border-radius: 40px; border: none;
+  background: var(--accent); color: #fff;
+  font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+  cursor: none; transition: transform .2s, box-shadow .3s, background .4s;
+  white-space: nowrap;
+}
+[data-theme="dark"] .btn-send { color: #000; }
+.btn-send:hover { transform: scale(1.04); box-shadow: 0 0 28px var(--accent-glow); }
+
+/* ── FOOTER ── */
+footer { padding: 28px 52px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); transition: var(--transition); }
+.footer-logo { font-weight: 600; font-size: 14px; color: var(--text); text-decoration: none; }
+.footer-logo span { color: var(--accent); transition: color .4s; }
+.footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: .04em; }
+
+/* ── FADE ── */
+.fade-up { opacity: 0; transform: translateY(36px); transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); }
+.fade-up.in { opacity: 1; transform: translateY(0); }
+.d1{transition-delay:.10s}.d2{transition-delay:.22s}.d3{transition-delay:.34s}.d4{transition-delay:.46s}
+
+/* ── TWEAKS ── */
+.tweaks-panel {
+  display: none; position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  width: 268px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 18px;
+  padding: 24px; box-shadow: 0 24px 72px var(--shadow); font-family: 'DM Sans', sans-serif;
+  transition: var(--transition);
+}
+.tweaks-panel.open { display: block; }
+.tweaks-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+.tweak-row { margin-bottom: 14px; }
+.tweak-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; display: block; }
+.tweak-select { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border2); font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); outline: none; cursor: pointer; transition: var(--transition); }
+.tweak-close { position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--muted); line-height: 1; }
+
+@media(max-width:900px){
+  .split{grid-template-columns:1fr;gap:40px}
+  .split.flip{direction:ltr}
+  .feat-grid{grid-template-columns:1fr;padding:0 32px}
+  nav{padding:0 20px}
+  .nav-links{display:none}
+  .section-inner{padding:0 32px}
+  .stats{padding:24px 32px}
+  .stat-div{display:none}
+  body{cursor:auto}
+  #cursor,#cursor-trail{display:none}
+}
+</style>
+<script type='text/javascript' nonce='Dbnfj0w0vVrT0qzka1+Ddg==' src='https://claude.ai/wFScc7dYDhjWAMP_m09ev7zL-uokP1MsYT_YLsM-bexAEP0oJ5blgsOe5U5iKJPvWau8nBUk39Cbv7oGOHUXpbmBapI3Bz2WLXmLaMZUZX5LmLbEVp09e0XsW2UuO_lqqGIwluxkb7CvxMp54ua6rNIqcJOu0o68CZYOIbmUiXIOtXNwchpcLA9QiIUGPACJC5YZSG1PUDhHGA7AXmIQYAMzOH34JEMFkcv5zDvHOb0z44gbsNW6gf60Y0vaZAUn_-0sVEoARqYgGSP9DCxKKziHWsBjwjtKS0yk550BlBiGo7IRbu6Wg1yGFsdzBAQq35m2fFRlmG0aA5gQK-oY5ZAdMAP3J4hffrZIfEfrstAlHDnOHY65wWftD4NWCBA1PdVCIdWhzMT5OHe82qzhylg4veu5LsWTTyePrtJNUHAos3ktruFmUc0ZBtyEOgjfeunVjqYWl6TAlA554ns84li_Fm7Lpzxi8BeGr2jFP-YY4hcl7dfe6Civ-tJejsS-PJ5-IRT3lo69RPkyGNh3thuc47Rae5rTiIoIo3GHB9mzO-NwHQUY'></script></head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">TuEmpresa <span>Security</span></a>
+  <ul class="nav-links">
+    <li><a href="#pentest" data-t="nav_pentest">Pen Testing</a></li>
+    <li><a href="#purview" data-t="nav_purview">Purview DLP</a></li>
+    <li><a href="#contact" data-t="nav_contact">Contacto</a></li>
+  </ul>
+  <div class="nav-right">
+    <a class="nav-cta" href="#contact" data-t="nav_cta">Comenzar</a>
+    <button class="icon-btn" id="themeBtn" title="Cambiar tema" aria-label="Toggle theme">
+      <!-- Moon (default: light mode) -->
+      <svg id="themeIcon" width="17" height="17" viewbox="0 0 17 17" fill="none">
+        <path d="M15 11.2A7 7 0 1 1 5.8 2a5.5 5.5 0 0 0 9.2 9.2z" fill="currentColor"/>
+      </svg>
+    </button>
+    <button class="icon-btn" id="langBtn" title="Cambiar idioma" aria-label="Toggle language">ES</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <p class="mono fade-up" data-t="hero_label">Ciberseguridad Empresarial</p>
+    <h1 class="hero-h fade-up d1" data-t-html="hero_h">Seguridad sin <strong>compromiso.</strong></h1>
+    <p class="hero-sub fade-up d2" data-t="hero_sub">Mueve el cursor. Observa el campo reaccionar.</p>
+    <div class="hero-btns fade-up d3">
+      <a class="btn-primary" href="#contact" data-t="hero_btn1">Iniciar conversación</a>
+      <a class="btn-outline" href="#pentest" data-t="hero_btn2">Ver servicios</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span data-t="scroll_hint">Deslizar</span>
+    <svg width="14" height="14" viewbox="0 0 14 14" fill="none">
+      <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats fade-up">
+  <div class="stat-item">
+    <div class="stat-num" data-t-html="stat1_num"><strong>1.284</strong></div>
+    <div class="stat-label" data-t="stat1_label">Amenazas bloqueadas este mes</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <div class="stat-num" data-t-html="stat2_num"><strong>24</strong>h</div>
+    <div class="stat-label" data-t="stat2_label">Tiempo de respuesta prom.</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <div class="stat-num" data-t-html="stat3_num"><strong>100</strong>%</div>
+    <div class="stat-label" data-t="stat3_label">Tasa de cumplimiento</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <div class="stat-num" data-t-html="stat4_num"><strong>48</strong></div>
+    <div class="stat-label" data-t="stat4_label">Pen tests completados</div>
+  </div>
+</div>
+
+<!-- PENTEST -->
+<section class="section" id="pentest" style="background:var(--bg)">
+  <div class="section-inner">
+    <div class="split">
+      <div class="visual-box fade-up"><canvas id="net-canvas"></canvas></div>
+      <div class="split-text fade-up d1">
+        <p class="split-label" data-t="s1_label">Servicio 01</p>
+        <h2 class="split-h" data-t-html="s1_h">Encuentra la <strong>brecha</strong><br/>antes que ellos.</h2>
+        <p class="split-desc" data-t="s1_desc">Simulación de ataques reales contra tu infraestructura. Pensamos como el adversario — para que puedas cerrar brechas antes de que se conviertan en incidentes.</p>
+        <a class="split-link" href="#contact" data-t="s1_link">→ Solicitar un test</a>
+        <div class="pill-row">
+          <span class="pill" data-t="pill_net">Infraestructure</span>
+          <span class="pill" data-t="pill_web">WEB</span>
+          <span class="pill" data-t="pill_social">Chat Bot</span>
+          <span class="pill" data-t="pill_cloud">API</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PURVIEW -->
+<section class="section" id="purview" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="split flip">
+      <div class="split-text fade-up">
+        <p class="split-label" data-t="s2_label">Servicio 02</p>
+        <h2 class="split-h" data-t-html="s2_h">Tus datos, <strong>siempre</strong> tuyos.</h2>
+        <p class="split-desc" data-t="s2_desc">Microsoft Purview DLP, desplegado y configurado para tu organización. Política, clasificación, aplicación — desde el primer día hasta siempre.</p>
+        <a class="split-link" href="#contact" data-t="s2_link">→ Explorar DLP</a>
+        <p style="margin-top:22px;font-family:&#39;JetBrains Mono&#39;,monospace;font-size:9px;letter-spacing:.1em;color:var(--muted)" data-t="s2_drag">↑ Arrastra las tarjetas para clasificar</p>
+      </div>
+      <div class="dlp-box fade-up d1">
+        <div class="dlp-stage" id="dlp-stage">
+          <svg id="dlp-lines" xmlns="http://www.w3.org/2000/svg"></svg>
+          <!-- DLP Hub -->
+          <div id="dlp-hub" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
+            <div style="width:64px;height:64px;border-radius:16px;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px var(--accent-glow),0 8px 32px var(--accent-glow);">
+              <svg width="32" height="32" viewbox="0 0 32 32" fill="none">
+                <path d="M16 3 L27 8 L27 18 C27 24.5 16 30 16 30 C16 30 5 24.5 5 18 L5 8 Z" fill="white" opacity="0.9"/>
+                <path d="M11 16 L14.5 19.5 L21 13" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);opacity:.8;white-space:nowrap">DLP Engine</span>
+          </div>
+          <p class="dlp-hint" data-t="dlp_hint">Arrastra · inspecciona · interactúa</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" style="background:var(--bg)">
+  <div class="feat-header">
+    <p class="mono fade-up" data-t="feat_label">Por qué nosotros</p>
+    <h2 class="feat-h fade-up d1" data-t-html="feat_h">Construido para amenazas <strong>modernas.</strong></h2>
+  </div>
+  <div class="feat-grid">
+    <!-- Card 1: Zero Trust -->
+    <div class="feat-card fade-up">
+      <div class="feat-visual">
+        <svg width="160" height="145" viewbox="0 0 160 145" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer ring -->
+          <circle cx="80" cy="72" r="58" stroke="oklch(0.52 0.22 250 / 0.18)" stroke-width="1" class="feat-ring"/>
+          <circle cx="80" cy="72" r="58" stroke="oklch(0.52 0.22 250 / 0.35)" stroke-width="1" stroke-dasharray="8 16" class="feat-ring"/>
+          <!-- Middle ring -->
+          <circle cx="80" cy="72" r="42" stroke="oklch(0.52 0.22 250 / 0.30)" stroke-width="1" class="feat-ring2"/>
+          <circle cx="80" cy="72" r="42" stroke="oklch(0.52 0.22 250 / 0.50)" stroke-width="1.2" stroke-dasharray="5 10" class="feat-ring2"/>
+          <!-- Glow dot on outer ring -->
+          <circle cx="80" cy="14" r="4" fill="oklch(0.52 0.22 250)" class="feat-pulse"/>
+          <!-- Shield -->
+          <path d="M80 30 L108 42 L108 72 C108 90 80 106 80 106 C80 106 52 90 52 72 L52 42 Z" fill="oklch(0.52 0.22 250 / 0.15)" stroke="oklch(0.52 0.22 250)" stroke-width="1.5"/>
+          <!-- Check -->
+          <path d="M68 71 L76 79 L93 62" stroke="oklch(0.52 0.22 250)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Dots on ring -->
+          <circle cx="138" cy="72" r="3" fill="oklch(0.55 0.22 285)"/>
+          <circle cx="22" cy="72" r="3" fill="oklch(0.72 0.22 340)"/>
+          <circle cx="80" cy="130" r="3" fill="oklch(0.52 0.22 250)"/>
+        </svg>
+      </div>
+      <div class="feat-body">
+        <div class="feat-tag"><span class="feat-tag-dot"></span><span data-t="f1_tag">Acceso</span></div>
+        <div class="feat-name" data-t="f1_name">Cero confianza.</div>
+        <p class="feat-desc" data-t="f1_desc">Cada acceso verificado, cada sesión monitoreada. La confianza se gana con pruebas, no con suposiciones.</p>
+        <div class="feat-stat">
+          <div class="feat-stat-num"><strong data-t="f1_stat_n">100</strong>%</div>
+          <div class="feat-stat-label" data-t="f1_stat_l">Sesiones verificadas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Full Clarity -->
+    <div class="feat-card fade-up d1">
+      <div class="feat-visual">
+        <svg width="160" height="145" viewbox="0 0 160 145" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Bars chart -->
+          <g transform="translate(24, 110)">
+            <rect x="0" y="-70" width="16" height="70" rx="4" fill="oklch(0.55 0.22 285 / 0.30)" class="feat-bar"/>
+            <rect x="22" y="-50" width="16" height="50" rx="4" fill="oklch(0.55 0.22 285 / 0.40)" class="feat-bar"/>
+            <rect x="44" y="-85" width="16" height="85" rx="4" fill="oklch(0.55 0.22 285 / 0.55)" class="feat-bar"/>
+            <rect x="66" y="-40" width="16" height="40" rx="4" fill="oklch(0.55 0.22 285 / 0.40)" class="feat-bar"/>
+            <rect x="88" y="-95" width="16" height="95" rx="4" fill="oklch(0.55 0.22 285)" class="feat-bar"/>
+          </g>
+          <!-- Trend line -->
+          <polyline points="32,92 54,76 76,56 98,68 120,28" stroke="oklch(0.55 0.22 285)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+          <circle cx="120" cy="28" r="5" fill="oklch(0.55 0.22 285)" class="feat-pulse"/>
+          <!-- Grid lines -->
+          <line x1="18" y1="110" x2="142" y2="110" stroke="oklch(0.55 0.22 285 / 0.15)" stroke-width="1"/>
+          <line x1="18" y1="85" x2="142" y2="85" stroke="oklch(0.55 0.22 285 / 0.10)" stroke-width="1"/>
+          <line x1="18" y1="60" x2="142" y2="60" stroke="oklch(0.55 0.22 285 / 0.10)" stroke-width="1"/>
+          <line x1="18" y1="35" x2="142" y2="35" stroke="oklch(0.55 0.22 285 / 0.10)" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="feat-body">
+        <div class="feat-tag"><span class="feat-tag-dot"></span><span data-t="f2_tag">Informes</span></div>
+        <div class="feat-name" data-t="f2_name">Claridad total.</div>
+        <p class="feat-desc" data-t="f2_desc">Cada compromiso termina con un informe que tu junta y tu equipo pueden ejecutar de inmediato.</p>
+        <div class="feat-stat">
+          <div class="feat-stat-num"><strong data-t="f2_stat_n">48</strong></div>
+          <div class="feat-stat-label" data-t="f2_stat_l">Informes entregados</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Fast Response -->
+    <div class="feat-card fade-up d2">
+      <div class="feat-visual">
+        <svg width="160" height="145" viewbox="0 0 160 145" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Clock face -->
+          <circle cx="80" cy="72" r="50" stroke="oklch(0.65 0.22 340 / 0.20)" stroke-width="1.5"/>
+          <circle cx="80" cy="72" r="50" stroke="oklch(0.65 0.22 340 / 0.35)" stroke-width="1.5" stroke-dasharray="6 12" class="feat-ring2"/>
+          <!-- Hour ticks -->
+          <line x1="80" y1="24" x2="80" y2="32" stroke="oklch(0.65 0.22 340)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="128" y1="72" x2="120" y2="72" stroke="oklch(0.65 0.22 340 / 0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="32" y1="72" x2="40" y2="72" stroke="oklch(0.65 0.22 340 / 0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="80" y1="120" x2="80" y2="112" stroke="oklch(0.65 0.22 340 / 0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Clock hands -->
+          <line x1="80" y1="72" x2="80" y2="42" stroke="oklch(0.65 0.22 340)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="80" y1="72" x2="100" y2="62" stroke="oklch(0.65 0.22 340)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="80" cy="72" r="4" fill="oklch(0.65 0.22 340)"/>
+          <!-- Lightning bolt -->
+          <path d="M90 18 L78 42 L87 42 L75 66 L100 36 L89 36 Z" fill="oklch(0.65 0.22 340)" opacity="0.85" class="feat-bolt"/>
+          <!-- Glow -->
+          <circle cx="80" cy="72" r="18" fill="oklch(0.65 0.22 340 / 0.08)" class="feat-pulse"/>
+        </svg>
+      </div>
+      <div class="feat-body">
+        <div class="feat-tag"><span class="feat-tag-dot"></span><span data-t="f3_tag">Respuesta</span></div>
+        <div class="feat-name" data-t="f3_name">Respuesta rápida.</div>
+        <p class="feat-desc" data-t="f3_desc">De la detección al plan de remediación en menos de 24 horas. La velocidad es una propiedad de seguridad.</p>
+        <div class="feat-stat">
+          <div class="feat-stat-num"><strong data-t="f3_stat_n">&lt;24</strong>h</div>
+          <div class="feat-stat-label" data-t="f3_stat_l">Tiempo de respuesta</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <p class="mono fade-up" style="display:block;margin-bottom:20px" data-t="contact_label">Contacto</p>
+  <h2 class="contact-h fade-up d1" data-t-html="contact_h">Hablemos.</h2>
+  <p class="contact-sub fade-up d2" data-t="contact_sub">Sin compromiso. Solo una conversación.</p>
+  <div class="contact-row fade-up d3">
+    <input class="contact-input" type="email" data-t-ph="contact_ph" placeholder="tu@email.com"/>
+    <button class="btn-send" data-t="contact_btn">Contactar</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a class="footer-logo" href="#">TuEmpresa <span>Security</span></a>
+  <span class="footer-copy" data-t="footer_copy">© 2026 TuEmpresa Security. Todos los derechos reservados.</span>
+</footer>
+
+<!-- TWEAKS -->
+<div class="tweaks-panel" id="tweaksPanel">
+  <button class="tweak-close" id="tweaksClose">×</button>
+  <div class="tweaks-title">// Tweaks</div>
+  <div class="tweak-row">
+    <label class="tweak-label" data-t="tw_density">Densidad de partículas</label>
+    <select class="tweak-select" id="tweakDensity">
+      <option value="180">180 (predeterminado)</option>
+      <option value="90">90 (disperso)</option>
+      <option value="280">280 (denso)</option>
+    </select>
+  </div>
+  <div class="tweak-row">
+    <label class="tweak-label" data-t="tw_behavior">Comportamiento del cursor</label>
+    <select class="tweak-select" id="tweakMode">
+      <option value="attract" data-t-opt="tw_attract">Atraer</option>
+      <option value="repel" data-t-opt="tw_repel">Repeler</option>
+      <option value="orbit" data-t-opt="tw_orbit">Orbitar</option>
+    </select>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════ */
+const T = {
+  es: {
+    nav_pentest:'Pen Testing', nav_purview:'Purview DLP', nav_contact:'Contacto', nav_cta:'Comenzar',
+    hero_label:'Ciberseguridad Empresarial',
+    hero_h:'Seguridad sin <strong>compromiso.</strong>',
+    hero_sub:'Mueve el cursor. Observa el campo reaccionar.',
+    hero_btn1:'Iniciar conversación', hero_btn2:'Ver servicios', scroll_hint:'Deslizar',
+    stat1_num:'<strong>1.284</strong>', stat1_label:'Amenazas bloqueadas este mes',
+    stat2_num:'<strong>24</strong>h',  stat2_label:'Tiempo de respuesta prom.',
+    stat3_num:'<strong>100</strong>%', stat3_label:'Tasa de cumplimiento',
+    stat4_num:'<strong>48</strong>',   stat4_label:'Pen tests completados',
+    s1_label:'Servicio 01', s1_h:'Encuentra la <strong>brecha</strong><br/>antes que ellos.',
+    s1_desc:'Simulación de ataques reales contra tu infraestructura. Pensamos como el adversario — para que puedas cerrar brechas antes de que se conviertan en incidentes.',
+    s1_link:'→ Solicitar un test',
+    pill_net:'Infraestructura', pill_web:'WEB', pill_social:'Chat Bot', pill_cloud:'API',
+    s2_label:'Servicio 02', s2_h:'Tus datos, <strong>siempre</strong> tuyos.',
+    s2_desc:'Microsoft Purview DLP, desplegado y configurado para tu organización. Política, clasificación, aplicación — desde el primer día hasta siempre.',
+    s2_link:'→ Explorar DLP', s2_drag:'↑ Arrastra las tarjetas para clasificar',
+    dlp_hint:'Descubre · clasifica · protege',
+    feat_label:'Por qué nosotros', feat_h:'Construido para amenazas <strong>modernas.</strong>',
+    f1_name:'Cero confianza.', f1_desc:'Cada acceso verificado, cada sesión monitoreada. La confianza se gana con pruebas, no con suposiciones.',
+    f1_tag:'Acceso', f1_stat_n:'100', f1_stat_l:'Sesiones verificadas',
+    f2_name:'Claridad total.', f2_desc:'Cada compromiso termina con un informe que tu junta y tu equipo pueden ejecutar de inmediato.',
+    f2_tag:'Informes', f2_stat_n:'48', f2_stat_l:'Informes entregados',
+    f3_name:'Respuesta rápida.', f3_desc:'De la detección al plan de remediación en menos de 24 horas. La velocidad es una propiedad de seguridad.',
+    f3_tag:'Respuesta', f3_stat_n:'<24', f3_stat_l:'Tiempo de respuesta',
+    contact_label:'Contacto', contact_h:'<strong>Hablemos.</strong>', contact_sub:'Sin compromiso. Solo una conversación.',
+    contact_ph:'tu@email.com', contact_btn:'Contactar',
+    footer_copy:'© 2026 TuEmpresa Security. Todos los derechos reservados.',
+    tw_density:'Densidad de partículas', tw_behavior:'Comportamiento del cursor',
+    tw_attract:'Atraer', tw_repel:'Repeler', tw_orbit:'Orbitar',
+    dlp_blocked:'⬛ Bloqueado', dlp_allowed:'✓ Permitido', dlp_review:'⚠ Revisión',
+    dlp_label_conf:'Confidencial', dlp_label_rest:'Restringido', dlp_label_pub:'Público', dlp_label_sec:'Secreto', dlp_label_int:'Interno',
+  },
+  en: {
+    nav_pentest:'Pen Testing', nav_purview:'Purview DLP', nav_contact:'Contact', nav_cta:'Get started',
+    hero_label:'Enterprise Cybersecurity',
+    hero_h:'Security without <strong>compromise.</strong>',
+    hero_sub:'Move your cursor. Watch the field react.',
+    hero_btn1:'Start a conversation', hero_btn2:'See our services', scroll_hint:'Scroll',
+    stat1_num:'<strong>1,284</strong>', stat1_label:'Threats blocked this month',
+    stat2_num:'<strong>24</strong>h',   stat2_label:'Avg. response time',
+    stat3_num:'<strong>100</strong>%',  stat3_label:'Compliance rate',
+    stat4_num:'<strong>48</strong>',    stat4_label:'Pen tests completed',
+    s1_label:'Service 01', s1_h:'Find the <strong>breach</strong><br/>before they do.',
+    s1_desc:'Real-world attack simulation against your infrastructure. We think like the adversary — so you can close gaps before they become incidents.',
+    s1_link:'→ Request a test',
+    pill_net:'Infraestructure', pill_web:'WEB', pill_social:'Chat Bot', pill_cloud:'API',
+    s2_label:'Service 02', s2_h:'Data stays <strong>yours.</strong> Always.',
+    s2_desc:'Microsoft Purview DLP, deployed and tuned for your organization. Policy, classification, enforcement — from day one to always.',
+    s2_link:'→ Explore DLP', s2_drag:'↑ Drag the cards to classify',
+    dlp_hint:'Discover · classify · protect',
+    feat_label:'Why us', feat_h:'Built for <strong>modern threats.</strong>',
+    f1_name:'Zero trust.', f1_desc:'Every access verified, every session monitored. Trust is earned through proof, not assumption.',
+    f1_tag:'Access', f1_stat_n:'100', f1_stat_l:'Sessions verified',
+    f2_name:'Full clarity.', f2_desc:'Every engagement ends with a report your board and your team can act on immediately.',
+    f2_tag:'Reports', f2_stat_n:'48', f2_stat_l:'Reports delivered',
+    f3_name:'Fast response.', f3_desc:'From detection to remediation plan in under 24 hours. Speed is a security property.',
+    f3_tag:'Response', f3_stat_n:'<24', f3_stat_l:'Response time',
+    contact_label:'Contact', contact_h:"Let's <strong>talk.</strong>", contact_sub:'No commitment. Just a conversation.',
+    contact_ph:'your@email.com', contact_btn:'Get in touch',
+    footer_copy:'© 2026 TuEmpresa Security. All rights reserved.',
+    tw_density:'Particle density', tw_behavior:'Cursor behavior',
+    tw_attract:'Attract', tw_repel:'Repel', tw_orbit:'Orbit',
+    dlp_blocked:'⬛ Blocked', dlp_allowed:'✓ Allowed', dlp_review:'⚠ Review',
+    dlp_label_conf:'Confidential', dlp_label_rest:'Restricted', dlp_label_pub:'Public', dlp_label_sec:'Secret', dlp_label_int:'Internal',
+  }
+};
+
+let lang = 'es';
+
+function translate(l) {
+  lang = l;
+  const d = T[l];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const k = el.getAttribute('data-t');
+    if (d[k] !== undefined) el.textContent = d[k];
+  });
+  document.querySelectorAll('[data-t-html]').forEach(el => {
+    const k = el.getAttribute('data-t-html');
+    if (d[k] !== undefined) el.innerHTML = d[k];
+  });
+  document.querySelectorAll('[data-t-ph]').forEach(el => {
+    const k = el.getAttribute('data-t-ph');
+    if (d[k] !== undefined) el.placeholder = d[k];
+  });
+  document.getElementById('langBtn').textContent = l === 'es' ? 'ES' : 'EN';
+  document.documentElement.lang = l;
+  buildDLP(); // rebuild DLP cards with translated labels
+}
+
+/* ══════════════════════════════════
+   THEME TOGGLE
+══════════════════════════════════ */
+const moonSvg = `<svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M15 11.2A7 7 0 1 1 5.8 2a5.5 5.5 0 0 0 9.2 9.2z" fill="currentColor"/></svg>`;
+const sunSvg  = `<svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="8.5" r="3.2" fill="currentColor"/><path d="M8.5 1.5v2M8.5 13.5v2M1.5 8.5h2M13.5 8.5h2M3.6 3.6l1.4 1.4M11.9 11.9l1.4 1.4M11.9 3.6l-1.4 1.4M3.6 11.9l1.4 1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+
+let isDark = false;
+const themeBtn = document.getElementById('themeBtn');
+
+function setTheme(dark) {
+  isDark = dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  themeBtn.innerHTML = dark ? sunSvg : moonSvg;
+  localStorage.setItem('ts-theme', dark ? 'dark' : 'light');
+}
+
+themeBtn.addEventListener('click', () => setTheme(!isDark));
+
+// Restore saved theme
+const saved = localStorage.getItem('ts-theme');
+if (saved === 'dark') setTheme(true);
+
+/* ══════════════════════════════════
+   LANGUAGE TOGGLE
+══════════════════════════════════ */
+document.getElementById('langBtn').addEventListener('click', () => {
+  translate(lang === 'es' ? 'en' : 'es');
+});
+
+/* ══════════════════════════════════
+   CURSOR
+══════════════════════════════════ */
+const cur = document.getElementById('cursor');
+const trail = document.getElementById('cursor-trail');
+let mx = -200, my = -200, tx = -200, ty = -200;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+});
+(function animTrail() {
+  tx += (mx - tx) * .12; ty += (my - ty) * .12;
+  trail.style.left = tx + 'px'; trail.style.top = ty + 'px';
+  requestAnimationFrame(animTrail);
+})();
+
+document.querySelectorAll('a, button, .feat-card, .pill').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+/* ══════════════════════════════════
+   HERO PARTICLE FIELD  (180 particles, v2 colors)
+══════════════════════════════════ */
+const hc = document.getElementById('hero-canvas');
+const hx = hc.getContext('2d');
+let PCOUNT = 180, particles = [], curMode = 'attract';
+const CDIST = 115, MRAD = 115;
+const P_COLORS = ['oklch(0.78 0.22 195)', 'oklch(0.68 0.26 290)', 'oklch(0.72 0.22 340)', 'oklch(0.78 0.18 215)'];
+
+function resizeHero() { hc.width = hc.offsetWidth; hc.height = hc.offsetHeight; }
+resizeHero();
+window.addEventListener('resize', () => { resizeHero(); initP(); });
+
+let hMx = -9999, hMy = -9999;
+hc.addEventListener('mousemove', e => {
+  const r = hc.getBoundingClientRect(); hMx = e.clientX - r.left; hMy = e.clientY - r.top;
+});
+hc.addEventListener('mouseleave', () => { hMx = -9999; hMy = -9999; });
+
+function initP() {
+  particles = [];
+  for (let i = 0; i < PCOUNT; i++) {
+    const bvx = (Math.random() - .5) * .45, bvy = (Math.random() - .5) * .45;
+    particles.push({
+      x: Math.random() * hc.width, y: Math.random() * hc.height,
+      vx: bvx, vy: bvy, bvx, bvy,
+      r: Math.random() * 1.8 + .5,
+      color: P_COLORS[Math.floor(Math.random() * P_COLORS.length)]
+    });
+  }
+}
+initP();
+
+// Connection color adapts to theme
+function connColor(a) {
+  return isDark ? `rgba(120,200,255,${a})` : `rgba(80,100,220,${a})`;
+}
+
+function drawHero() {
+  hx.clearRect(0, 0, hc.width, hc.height);
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+    const dx = hMx - p.x, dy = hMy - p.y;
+    const d = Math.sqrt(dx * dx + dy * dy);
+    if (d < MRAD) {
+      const f = (MRAD - d) / MRAD;
+      if (curMode === 'repel')        { p.vx -= (dx/d)*f*.7; p.vy -= (dy/d)*f*.7; }
+      else if (curMode === 'attract') { p.vx += (dx/d)*f*.45; p.vy += (dy/d)*f*.45; }
+      else /* orbit */ { const tx=-dy/d, ty=dx/d; p.vx+=tx*f*.55; p.vy+=ty*f*.55; }
+    }
+    p.vx += (p.bvx - p.vx) * .022; p.vy += (p.bvy - p.vy) * .022;
+    const sp = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+    if (sp > 4) { p.vx = (p.vx/sp)*4; p.vy = (p.vy/sp)*4; }
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < -8) p.x = hc.width+8; if (p.x > hc.width+8) p.x = -8;
+    if (p.y < -8) p.y = hc.height+8; if (p.y > hc.height+8) p.y = -8;
+    for (let j = i+1; j < particles.length; j++) {
+      const q = particles[j];
+      const cd = Math.hypot(p.x-q.x, p.y-q.y);
+      if (cd < CDIST) {
+        hx.beginPath(); hx.moveTo(p.x, p.y); hx.lineTo(q.x, q.y);
+        hx.strokeStyle = connColor((1-cd/CDIST)*0.20);
+        hx.lineWidth = .7; hx.stroke();
+      }
+    }
+    if (d < MRAD) {
+      hx.beginPath(); hx.moveTo(p.x, p.y); hx.lineTo(hMx, hMy);
+      hx.strokeStyle = connColor((1-d/MRAD)*0.12);
+      hx.lineWidth = .5; hx.stroke();
+    }
+    hx.beginPath(); hx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    hx.fillStyle = p.color;
+    hx.shadowBlur = d < 70 ? 10 : 0;
+    hx.shadowColor = 'rgba(120,200,255,0.6)';
+    hx.fill(); hx.shadowBlur = 0;
+  }
+  if (hMx > 0) {
+    hx.beginPath(); hx.arc(hMx, hMy, MRAD, 0, Math.PI*2);
+    hx.strokeStyle = connColor(0.07); hx.lineWidth = 1; hx.stroke();
+  }
+  requestAnimationFrame(drawHero);
+}
+drawHero();
+
+/* ══════════════════════════════════
+   NETWORK CANVAS
+══════════════════════════════════ */
+const nc = document.getElementById('net-canvas');
+const nx = nc.getContext('2d');
+let nodes = [], hovNode = -1;
+
+function resizeNet() { nc.width = nc.offsetWidth; nc.height = nc.offsetHeight; buildNodes(); }
+
+function buildNodes() {
+  nodes = [];
+  const cx = nc.width/2, cy = nc.height/2;
+  nodes.push({ x:cx, y:cy, r:20, label:'TARGET', color:'oklch(0.62 0.22 250)', isPrimary:true, connections:[], pulse:0, compromised:false });
+  const labels = ['DMZ','API','DB','AUTH','VPN','CDN','DNS','MAIL','FW','WEB','APP','ADMIN','MFA'];
+  for (let i = 0; i < 13; i++) {
+    const angle = (i/13)*Math.PI*2;
+    const tier = i%3;
+    const spread = (tier===0?.68:tier===1?.40:.24)*Math.min(cx,cy)*.88;
+    nodes.push({
+      x: cx+Math.cos(angle)*spread, y: cy+Math.sin(angle)*spread,
+      r: tier===0?9:tier===1?6.5:4.5,
+      color: tier===0?'oklch(0.65 0.20 250)':tier===1?'oklch(0.62 0.18 280)':'oklch(0.68 0.16 255)',
+      compromised: Math.random() > .68, pulse: Math.random()*Math.PI*2,
+      connections: [0], label: labels[i]
+    });
+  }
+  for (let i = 1; i < nodes.length; i++)
+    for (let j = i+1; j < nodes.length; j++)
+      if (Math.random() > .72) nodes[i].connections.push(j);
+}
+
+let nMx = -9999, nMy = -9999;
+nc.addEventListener('mousemove', e => {
+  const r = nc.getBoundingClientRect(); nMx = e.clientX-r.left; nMy = e.clientY-r.top;
+  hovNode = -1;
+  nodes.forEach((n,i) => { if (Math.hypot(nMx-n.x, nMy-n.y) < n.r+12) hovNode = i; });
+});
+nc.addEventListener('mouseleave', () => { nMx=-9999; nMy=-9999; hovNode=-1; });
+nc.addEventListener('click', () => { if (hovNode > 0) nodes[hovNode].compromised = !nodes[hovNode].compromised; });
+
+let nT = 0;
+function drawNet() {
+  nx.clearRect(0, 0, nc.width, nc.height);
+  nT += .02;
+  const edgeAlpha = isDark ? 0.22 : 0.18;
+  const edgeHot   = isDark ? 'rgba(120,220,255,0.70)' : 'rgba(60,100,220,0.65)';
+  for (let i = 0; i < nodes.length; i++) {
+    const n = nodes[i];
+    for (const j of n.connections) {
+      if (j >= nodes.length) continue;
+      const m = nodes[j], hot = hovNode===i||hovNode===j;
+      nx.beginPath(); nx.moveTo(n.x, n.y); nx.lineTo(m.x, m.y);
+      nx.strokeStyle = hot ? edgeHot : `rgba(100,100,200,${edgeAlpha})`;
+      nx.lineWidth = hot ? 1.6 : 1.1; nx.stroke();
+      if (n.compromised || m.compromised) {
+        const t = ((nT*.38)%1);
+        const px = n.x+(m.x-n.x)*t, py = n.y+(m.y-n.y)*t;
+        nx.beginPath(); nx.arc(px, py, 2.2, 0, Math.PI*2);
+        nx.fillStyle = n.compromised ? 'oklch(0.60 0.22 20)' : 'oklch(0.65 0.20 250)';
+        nx.shadowBlur = 8; nx.shadowColor = n.compromised ? '#f88' : '#88f';
+        nx.fill(); nx.shadowBlur = 0;
+      }
+    }
+  }
+  nodes.forEach((n, i) => {
+    n.pulse += .038;
+    const pr = n.r + Math.sin(n.pulse)*.4, hov = hovNode===i;
+    if (hov) {
+      nx.beginPath(); nx.arc(n.x, n.y, pr+11, 0, Math.PI*2);
+      nx.strokeStyle = isDark ? 'rgba(120,220,255,0.2)' : 'rgba(60,100,220,0.18)';
+      nx.lineWidth = 1.5; nx.stroke();
+    }
+    if (n.compromised && !n.isPrimary) {
+      nx.beginPath(); nx.arc(n.x, n.y, pr+5, 0, Math.PI*2);
+      nx.fillStyle = 'rgba(220,60,60,0.09)'; nx.fill();
+    }
+    nx.beginPath(); nx.arc(n.x, n.y, pr, 0, Math.PI*2);
+    nx.fillStyle = (n.compromised && !n.isPrimary) ? 'oklch(0.60 0.22 20)' : n.color;
+    nx.shadowBlur = hov ? 16 : 6;
+    nx.shadowColor = n.compromised ? 'rgba(220,80,80,0.4)' : (isDark ? 'rgba(120,200,255,0.35)' : 'rgba(60,100,220,0.30)');
+    nx.fill(); nx.shadowBlur = 0;
+    if (hov || n.isPrimary) {
+      nx.fillStyle = isDark ? 'rgba(240,240,255,0.75)' : 'rgba(22,22,42,0.60)';
+      nx.font = n.isPrimary ? 'bold 9px JetBrains Mono,monospace' : '9px JetBrains Mono,monospace';
+      nx.textAlign = 'center'; nx.fillText(n.label, n.x, n.y-pr-7);
+    }
+  });
+  const hint = lang === 'es' ? '// clic en nodos para simular brecha' : '// click nodes to toggle breach';
+  nx.font = '8px JetBrains Mono,monospace';
+  nx.fillStyle = isDark ? 'rgba(240,240,255,0.22)' : 'rgba(22,22,42,0.22)';
+  nx.textAlign = 'left'; nx.fillText(hint, 12, nc.height - 12);
+  requestAnimationFrame(drawNet);
+}
+resizeNet(); drawNet();
+window.addEventListener('resize', resizeNet);
+
+/* ══════════════════════════════════
+   DLP DRAGGABLE CARDS
+══════════════════════════════════ */
+const dlpStage = document.getElementById('dlp-stage');
+const dlpLines = document.getElementById('dlp-lines');
+
+const CARD_DATA = [
+  { name:'Q4 Revenue.xlsx', meta:'Finance · 4.2 MB', tag:'block', labelKey:'dlp_label_conf', x:44,  y:50  },
+  { name:'employee_db.csv',  meta:'HR · 12.8 MB',    tag:'block', labelKey:'dlp_label_rest', x:235, y:35  },
+  { name:'Press Release.doc',meta:'Comms · 320 KB',  tag:'ok',    labelKey:'dlp_label_pub',  x:44,  y:238 },
+  { name:'API Keys.txt',     meta:'Dev · 1.1 KB',    tag:'block', labelKey:'dlp_label_sec',  x:235, y:225 },
+  { name:'Design Assets.zip',meta:'Design · 88 MB',  tag:'warn',  labelKey:'dlp_label_int',  x:135, y:150 },
+];
+const cardEls = [];
+
+function buildDLP() {
+  dlpStage.querySelectorAll('.dlp-card').forEach(e => e.remove());
+  cardEls.length = 0;
+  CARD_DATA.forEach((cd, idx) => {
+    const d = T[lang];
+    const tagText = cd.tag === 'block' ? d.dlp_blocked : cd.tag === 'ok' ? d.dlp_allowed : d.dlp_review;
+    const tagClass = cd.tag === 'block' ? 'tag-block' : cd.tag === 'ok' ? 'tag-ok' : 'tag-warn';
+    const el = document.createElement('div');
+    el.className = 'dlp-card';
+    el.style.cssText = `left:${cd.x}px;top:${cd.y}px;z-index:${idx+1}`;
+    el.innerHTML = `
+      <div class="dlp-card-label">${d[cd.labelKey]}</div>
+      <div class="dlp-card-name">${cd.name}</div>
+      <div class="dlp-card-meta">${cd.meta}</div>
+      <span class="dlp-card-tag ${tagClass}">${tagText}</span>`;
+    let sx, sy, ol, ot, drag = false;
+    const startDrag = (cx, cy) => {
+      drag = true; el.classList.add('dragging'); el.style.zIndex = 999;
+      sx = cx; sy = cy; ol = parseFloat(el.style.left)||0; ot = parseFloat(el.style.top)||0;
+    };
+    const moveDrag = (cx, cy) => {
+      if (!drag) return;
+      el.style.left = (ol+cx-sx)+'px'; el.style.top = (ot+cy-sy)+'px'; drawLines();
+    };
+    const endDrag = () => { if (drag) { drag=false; el.classList.remove('dragging'); el.style.zIndex=idx+1; } };
+    el.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
+    document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+    document.addEventListener('mouseup', endDrag);
+    el.addEventListener('touchstart', e => { const t=e.touches[0]; startDrag(t.clientX, t.clientY); }, {passive:true});
+    document.addEventListener('touchmove', e => { const t=e.touches[0]; moveDrag(t.clientX, t.clientY); }, {passive:true});
+    document.addEventListener('touchend', endDrag);
+    el.addEventListener('mouseenter', () => cur.classList.add('big'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+    dlpStage.appendChild(el); cardEls.push(el);
+  });
+  drawLines();
+}
+
+function drawLines() {
+  dlpLines.innerHTML = '';
+  const cx = dlpStage.offsetWidth/2, cy = dlpStage.offsetHeight/2;
+  cardEls.forEach((el, i) => {
+    const l = parseFloat(el.style.left)||0, t = parseFloat(el.style.top)||0;
+    const c = { x: l+87, y: t+58 };
+    const tag = CARD_DATA[i].tag;
+    const alpha = isDark ? '0.55' : '0.38';
+    const col = tag==='block'?`oklch(0.62 0.22 20 / ${alpha})`:tag==='ok'?`oklch(0.52 0.20 145 / ${alpha})`:`oklch(0.68 0.22 60 / ${alpha})`;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',c.x); line.setAttribute('y1',c.y);
+    line.setAttribute('x2',cx); line.setAttribute('y2',cy);
+    line.setAttribute('stroke',col); line.setAttribute('stroke-width','1.5');
+    line.setAttribute('stroke-dasharray','5 7');
+    dlpLines.appendChild(line);
+  });
+}
+
+buildDLP();
+
+/* ══════════════════════════════════
+   SCROLL FADE
+══════════════════════════════════ */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: .1 });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+/* ══════════════════════════════════
+   TWEAKS
+══════════════════════════════════ */
+window.addEventListener('message', e => {
+  if (e.data?.type === '__activate_edit_mode')   document.getElementById('tweaksPanel').classList.add('open');
+  if (e.data?.type === '__deactivate_edit_mode') document.getElementById('tweaksPanel').classList.remove('open');
+});
+window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+document.getElementById('tweaksClose').addEventListener('click', () => {
+  document.getElementById('tweaksPanel').classList.remove('open');
+  window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+});
+document.getElementById('tweakDensity').addEventListener('change', function() {
+  PCOUNT = +this.value; initP();
+});
+document.getElementById('tweakMode').addEventListener('change', function() {
+  curMode = this.value;
+});
+</script>
+</body>
+</html>
